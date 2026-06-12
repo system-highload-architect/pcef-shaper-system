@@ -85,6 +85,10 @@ graph TD
 * **[RU]** Обработка пакетов должна выполняться параллельными горутинами, утилизирующими все ядра CPU. Мапа сессий абонентов обязана исключать *Mutex Contention*. Мы применим паттерн **Map Sharding (Шардирование мап)** для снижения конкуренции за замки памяти под нагрузкой в сотни тысяч RPS.
 * **[EN]** Packet processing must be driven by parallel goroutines utilizing all available CPU cores. The subscriber session map must eliminate *Mutex Contention*. We will deploy the **Map Sharding** pattern to reduce memory lock contention under loads exceeding hundreds of thousands of RPS.
 
+### 5. Table-Driven Policy Dispatching / Табличная диспетчеризация политик (Req. 5)
+* **[RU]** Для исключения деградации процессора на предсказании ветвлений (*Branch Misprediction*) при разрастании бизнес-логики до десятков тысяч условий, в ядро PCEF внедрен паттерн **Table-Driven Dispatch**. Каскады `if-else` и `switch` заменены на высокопроизводительный хэшированный реестр функций `map[string]PolicyAction`. Вычисление и применение PCC-правил происходит за константное время $O(1)$ через прямые вызовы кэшированных указателей функций в памяти RAM.
+* **[EN]** To prevent CPU branch misprediction degradation as business logic scales to tens of thousands of conditions, the PCEF core deploys the **Table-Driven Dispatch** pattern. Nested `if-else` and `switch` cascades are replaced with a high-performance hashed function registry `map[string]PolicyAction`. Evaluation and enforcement of PCC rules take place within constant $O(1)$ time via direct execution of cached memory function pointers.
+
 ---
 
 ## 🏛️ Общий технический разбор эшелонов архитектуры / Deep Architecture Deep Dive
