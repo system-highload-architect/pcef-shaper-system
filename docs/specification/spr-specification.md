@@ -28,5 +28,5 @@ sequenceDiagram
 ---
 
 ### 🛠️ Выигрыш и Обоснование технологий / Technology Justification & Benefits
-* **[RU]** **Технология: ScyllaDB / Cassandra NoSQL с LSM-деревом.** Выигрыш: Архитектура LSM-деревьев (Log-Structured Merge-tree) превращает случайные записи в последовательные, что обеспечивает стабильную запись миллионов профилей в секунду без деградации дисков SSD. Кэширование горячих строк (*Row Cache*) в RAM обеспечивает чтение за 0.5 миллисекунд.
-* **[EN]** **Technology: ScyllaDB / Cassandra NoSQL with LSM-Trees.** Benefits: The LSM-tree (Log-Structured Merge-tree) architecture morphs random writes into sequential ones, guaranteeing stable writes of millions of profiles per second without SSD degradation. Row caching in RAM guarantees read times within 0.5ms.
+* **[RU]** **Технология: ScyllaDB / Cassandra NoSQL с LSM-деревом.** Выигрыш: архитектура LSM-деревьев (Log-Structured Merge-tree) превращает случайные записи в последовательные, что обеспечивает стабильную запись миллионов профилей в секунду без деградации дисков SSD. Кэширование горячих строк (*Row Cache*) в RAM обеспечивает чтение за 0.5 миллисекунд.
+* **[EN]** **Technology: ScyllaDB / Cassandra NoSQL with LSM-Trees.** Benefits: the LSM-tree (Log-Structured Merge-tree) architecture morphs random writes into sequential ones, guaranteeing stable writes of millions of profiles per second without SSD degradation. Row caching in RAM guarantees read times within 0.5ms.

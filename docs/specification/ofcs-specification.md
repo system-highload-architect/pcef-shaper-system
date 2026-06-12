@@ -27,5 +27,5 @@ sequenceDiagram
 ---
 
 ### 🛠️ Выигрыш и Обоснование технологий / Technology Justification & Benefits
-* **[RU]** **Технология: Apache Kafka + ClickHouse (Column-oriented DB).** Выигрыш: Поток CDR сливается в Kafka (буфер), откуда воркеры пачками (*Batching*) записывают данные в ClickHouse. Колончатая структура ClickHouse сжимает логи на диске в 5–10 раз и позволяет СТО выполнять аналитические b2b-запросы по миллиардам строк за миллисекунды.
-* **[EN]** **Technology: Apache Kafka + ClickHouse (Column-oriented DB).** Benefits: The CDR stream is dumped into Kafka (buffering), from where workers perform batch writes into ClickHouse. ClickHouse's columnar structure compresses disk logs by 5-10x and enables the CTO to execute analytical b2b queries over billions of rows within milliseconds.
+* **[RU]** **Технология: Apache Kafka + ClickHouse (Column-oriented DB).** Выигрыш: поток CDR сливается в Kafka (буфер), откуда воркеры пачками (*Batching*) записывают данные в ClickHouse. Колончатая структура ClickHouse сжимает логи на диске в 5–10 раз и позволяет СТО выполнять аналитические b2b-запросы по миллиардам строк за миллисекунды.
+* **[EN]** **Technology: Apache Kafka + ClickHouse (Column-oriented DB).** Benefits: the CDR stream is dumped into Kafka (buffering), from where workers perform batch writes into ClickHouse. ClickHouse's columnar structure compresses disk logs by 5-10x and enables the CTO to execute analytical b2b queries over billions of rows within milliseconds.

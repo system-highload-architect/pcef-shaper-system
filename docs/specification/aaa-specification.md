@@ -26,5 +26,5 @@ sequenceDiagram
 ---
 
 ### 🛠️ Выигрыш и Обоснование технологий / Technology Justification & Benefits
-* **[RU]** **Технология: UDP Socket Multiplexing на Go.** Выигрыш: Использование чистых системных вызовов Linux `epoll` и пула горутин-воркеров позволяет обрабатывать RADIUS-сигнализацию со скоростью интерфейса линии, исключая зависания сетевых потоков и гарантируя мгновенную авторизацию сотен тысяч устройств в минуту.
-* **[EN]** **Technology: UDP Socket Multiplexing in Go.** Benefits: Utilizing raw Linux `epoll` syscalls and a concurrent goroutine worker pool enables processing of RADIUS signaling at wire speed, preventing network thread starvation and guaranteeing instant authorization of hundreds of thousands of devices per minute.
+* **[RU]** **Технология: UDP Socket Multiplexing на Go.** Выигрыш: использование чистых системных вызовов Linux `epoll` и пула горутин-воркеров позволяет обрабатывать RADIUS-сигнализацию со скоростью интерфейса линии, исключая зависания сетевых потоков и гарантируя мгновенную авторизацию сотен тысяч устройств в минуту.
+* **[EN]** **Technology: UDP Socket Multiplexing in Go.** Benefits: utilizing raw Linux `epoll` syscalls and a concurrent goroutine worker pool enables processing of RADIUS signaling at wire speed, preventing network thread starvation and guaranteeing instant authorization of hundreds of thousands of devices per minute.

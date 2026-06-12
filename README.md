@@ -1,8 +1,10 @@
 # 🏛️ 3GPP Policy & Charging Enforcement Function (PCEF) Shaper System
 
-[RU] Данный модуль представляет собой высокопроизводительный, коммерческий User Plane движок PCEF (Функция применения политик и тарификации) с интегрированным DPI (Deep Packet Inspection) и QoS-шейпером трафика. Архитектура спроектирована по стандартам 3GPP PCC (Policy and Charging Control) для телеком- и финтех-экосистем.
+[RU] Данный модуль представляет собой высокопроизводительный, коммерческий User Plane движок PCEF (функция применения политик и тарификации) с интегрированным DPI (Deep Packet Inspection) и QoS-шейпером трафика. Архитектура спроектирована по стандартам 3GPP PCC (Policy and Charging Control) для телеком- и финтех-экосистем.
 
 [EN] This module implements a high-performance, production-ready User Plane PCEF (Policy & Charging Enforcement Function) engine featuring an integrated DPI (Deep Packet Inspection) classifier and QoS traffic shaper. Designed strictly according to 3GPP PCC (Policy and Charging Control) standards for telecom and fintech ecosystems.
+
+### Полный разбор: [🚀 docs](./docs/navigation.md)
 
 ---
 
