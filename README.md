@@ -4,7 +4,8 @@
 
 [EN] This module implements a high-performance, production-ready User Plane PCEF (Policy & Charging Enforcement Function) engine featuring an integrated DPI (Deep Packet Inspection) classifier and QoS traffic shaper. Designed strictly according to 3GPP PCC (Policy and Charging Control) standards for telecom and fintech ecosystems.
 
-### Полный разбор: [🚀 docs](./docs/navigation.md)
+### Навигация по архитектуре: [🚀 architecture](./docs/navigation.md)
+### Навигация по техническому заданию: [🚀 technical specification](./docs//srs/srs-navigation.md)
 
 ---
 
