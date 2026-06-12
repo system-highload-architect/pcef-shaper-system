@@ -9,54 +9,54 @@
 ## 🗺️ System Topology & Architecture / Архитектурная топология системы
 
 ```mermaid
-graph T_D
+graph TD
     %% Стилизация элементов / Node Styling
     classDef control fill:#2b6cb0,stroke:#1a365d,stroke-width:2px,color:#fff;
     classDef user fill:#2f855a,stroke:#22543d,stroke-width:2px,color:#fff;
     classDef storage fill:#d69e2e,stroke:#744210,stroke-width:2px,color:#fff;
     classDef client fill:#4a5568,stroke:#2d3748,stroke-width:2px,color:#fff;
 
-    %% Плоскость Управления / Control Plane (Left)
-    subgraph Control_Plane [Control Plane / Плоскость управления]
-        AF[Application Function / AF]:::control
-        SPR[Subscription Profile Repository / SPR / UDR]:::storage
-        PCRF[Policy & Charging Rules Function / PCRF]:::control
-        OCS[Online Charging System / OCS]:::storage
-        OFCS[Offline Charging System / OFCS]:::storage
+    %% 1. Уровень Пользователей и Шлюзов / User & Gateway Layer
+    UE[📱 User Equipment / UE]:::client
+    Gateway[🌐 Access Gateway / BNG / PGW / UPF]:::user
+
+    %% 2. Изолированный Движок PCEF Core / Isolated PCEF Core Engine
+    subgraph PCEF_Core [PCEF Core Движок / Plane пользователя]
+        DPI[🛡️ Internal DPI / Эшелон классификации]:::user
+        QoS[⚡ QoS Shaper / Шейпинг скорости]:::user
     end
 
-    %% Плоскость Пользователя / User Plane (Right)
-    subgraph User_Plane [User Plane / Плоскость пользователя]
-        UE[User Equipment / UE]:::client
-        Gateway[Access Gateway / BNG / PGW / UPF]:::user
-        
-        subgraph PCEF_Core [PCEF Core Движок]
-            DPI[🛡️ Internal DPI / Эшелон классификации трафика]:::user
-            QoS[⚡ QoS Shaper / Шейпинг скорости]:::user
-        end
-        
-        AAA[RADIUS / AAA Server]:::control
-    end
+    %% 3. Уровень Управляющей Логики / Control Plane Layer
+    PCRF[⚙️ PCRF / Функция управления политиками]:::control
+    AF[🚀 Application Function / AF]:::control
 
-    %% Взаимодействие в Control Plane / Control Plane Interactions
+    %% 4. Внешние Enterprise b2b Сервисы и СУБД / External b2b Services & Storage
+    SPR[(🗄️ SPR / UDR / Профили абонентов)]:::storage
+    OCS[(💸 OCS / Онлайн-тарификация Gy)]:::storage
+    OFCS[(📊 OFCS / Оффлайн-логи Gz)]:::storage
+    AAA[🔒 RADIUS / AAA Server]:::control
+
+    %% СВЯЗИ И СИГНАЛИЗАЦИЯ / INTERFACES & SIGNALLING
+
+    %% Сигнализация в Control Plane
     AF -->|Rx / Diameter| PCRF
     SPR -->|Sp / Ud| PCRF
     
-    %% Взаимодействие между Control и User Plane / Control-to-User Mapping
-    PCRF -->|Gx / Diameter: Отправка PCC-правил| PCEF_Core
+    %% Интерфейс Gx (Управление)
+    PCRF -->|Gx / Diameter: Отправка PCC-правил| DPI
     
-    %% Поток трафика пользователя / User Traffic Flow
+    %% Поток трафика и RADIUS сессий от Шлюза
     UE -->|L4-L7 Raw Traffic| Gateway
-    Gateway -->|Data Packets| DPI
-    
-    %% Тарификация и Авторизация / Billing & Authorization
-    PCEF_Core -->|Gy / Diameter: Онлайн-списания| OCS
-    PCEF_Core -->|Gz / Diameter: Оффлайн-логи| OFCS
-    PCEF_Core -->|Accounting Request| AAA
-    Gateway -.->|Auth / Access| AAA
+    Gateway -->|1. RADIUS UDP Auth/Acct Requests| DPI
+    Gateway -->|2. Data Packets / Зеркалирование| DPI
 
-    %% Логические связи внутри PCEF / Internal logic pipeline
-    DPI -->|Сигнатура трафика определена| QoS
+    %% Проксирование RADIUS и тарификация Diameter из PCEF Core
+    DPI -->|RADIUS Proxy / Forward| AAA
+    QoS -->|Gy / Diameter: Онлайн-списания| OCS
+    QoS -->|Gz / Diameter: Оффлайн-логи| OFCS
+
+    %% Внутренний конвейер PCEF
+    DPI -->|3. Сигнатура трафика определена| QoS
 ```
 
 ---
@@ -67,18 +67,18 @@ graph T_D
 
 [EN] Our core objective is to build a lightweight, fault-tolerant **User Plane PCEF** emulator in pure Go. It abstracts away heavy Diameter serialization overhead while perfectly replicating L4-L7 packet processing physics under intense Highload stress.
 
-### 1. Embedded DPI Classifier / Встроенный DPI-классификатор
+### 1. Embedded DPI Classifier / Встроенный DPI-классификатор (Req. 1)
 * **[RU]** Сервер должен на лету парсить заголовки входящих сетевых пакетов. В рамках демо-кода классификация пакетов осуществляется по сигнатурам (Payload/Host Strings), разделяя трафик на три b2b-категории: `SOCIAL` (мессенджеры), `STREAMING` (тяжелое видео/YouTube) и `GAMING`.
 * **[EN]** The engine must parse incoming network packet headers on the fly. In this demo-code scope, classification is driven by payload/host signatures, routing traffic into three distinct b2b categories: `SOCIAL` (messengers), `STREAMING` (heavy video/YouTube), and `GAMING`.
 
-### 2. Credit Control Interface (Gy Sync) / Управление балансом в реальном времени
+### 2. Credit Control Interface (Gy Sync) / Управление балансом в реальном времени (Req. 2)
 * **[RU]** Перед тем как пропустить пакет сквозь QoS-шлюз, PCEF обязан проверить баланс лицевого счета пользователя в OCS. Мы реализуем In-Memory аналог OCS на базе атомарных вычислений. Если у пользователя кончился пакет мегабайт или баланс равен 0, OCS возвращает код отсечки, и PCEF блокирует/срезает трафик.
 * **[EN]** Prior to letting a packet through the QoS gateway, the PCEF must evaluate the subscriber's financial balance within the OCS. We implement an in-memory OCS subsystem utilizing atomic operations. If a subscriber exhausts their data quota or reaches a $0$ balance, the OCS returns a cutoff code, forcing the PCEF to throttle or drop the traffic.
 
-### 3. Dynamic QoS Traffic Shaping / Динамический шейпинг скорости
+### 3. Dynamic QoS Traffic Shaping / Динамический шейпинг скорости (Req. 3)
 * **[RU]** Применение политик ограничения скорости должно работать в реальном времени без глобальных блокировок рантайма Go. Мы применим усовершенствованный алгоритм **Leaky Bucket (Протекающее ведро)** для сглаживания всплесков трафика. Скорость пропускания байт (`Bandwidth Limit`) жестко регулируется PCC-правилами, полученными от эмулятора PCRF.
 * **[EN]** Bandwidth throttling and traffic shaping must operate in real time without triggering global Go runtime deadlocks. We will deploy an optimized **Leaky Bucket** algorithm to smooth out network traffic spikes. The maximum byte throughput rate (`Bandwidth Limit`) is strictly enforced by PCC rules received from the PCRF emulator.
 
-### 4. Highload Thread Isolation / Потокобезопасность ядра
+### 4. Highload Thread Isolation / Потокобезопасность ядра (Req. 4)
 * **[RU]** Обработка пакетов должна выполняться параллельными горутинами, утилизирующими все ядра CPU. Мапа сессий абонентов обязана исключать *Mutex Contention*. Мы применим паттерн **Map Sharding (Шардирование мап)** для снижения конкуренции за замки памяти под нагрузкой в сотни тысяч RPS.
 * **[EN]** Packet processing must be driven by parallel goroutines utilizing all available CPU cores. The subscriber session map must eliminate *Mutex Contention*. We will deploy the **Map Sharding** pattern to reduce memory lock contention under loads exceeding hundreds of thousands of RPS.
