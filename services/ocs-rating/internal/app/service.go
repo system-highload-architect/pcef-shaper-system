@@ -124,8 +124,8 @@ func (s *OcsService) Release(ctx context.Context, subID string, sessionID string
 }
 
 func (s *OcsService) bootstrapDefaultBalances() {
-	// Наполняем финтех-балансы абонентов согласно нашему ТЗ (VIP, BASE, Блокированный)
-	s.balances.Store("250010000000001", &domain.GyCreditState{TotalBalanceBytes: 100 * 1024 * 1024}) // 100 МБ
-	s.balances.Store("250010000000002", &domain.GyCreditState{TotalBalanceBytes: 5 * 1024 * 1024})   // 5 МБ
-	s.balances.Store("250010000000003", &domain.GyCreditState{TotalBalanceBytes: 0})                 // 0 МБ
+	// Добавляем емкости: VIP даем 100 Гигабайт, BASE — 5 Гигабайт
+	s.balances.Store("250010000000001", &domain.GyCreditState{TotalBalanceBytes: 100 * 1024 * 1024 * 1024})
+	s.balances.Store("250010000000002", &domain.GyCreditState{TotalBalanceBytes: 5 * 1024 * 1024 * 1024})
+	s.balances.Store("250010000000003", &domain.GyCreditState{TotalBalanceBytes: 0})
 }

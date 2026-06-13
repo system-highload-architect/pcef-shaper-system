@@ -76,7 +76,7 @@ func (g *TrafficGenerator) spawnDeviceWorker(ctx context.Context, imsi, ip strin
 		case <-ctx.Done():
 			return
 		default:
-			payloadSize := int64(r.Intn(1.5 * 1024 * 1024))
+			payloadSize := int64(r.Intn(50 * 1024))
 			targetHost := hosts[r.Intn(len(hosts))]
 
 			err := stream.Send(&gen.RawPacketFrame{
@@ -89,7 +89,7 @@ func (g *TrafficGenerator) spawnDeviceWorker(ctx context.Context, imsi, ip strin
 				return
 			}
 
-			time.Sleep(time.Duration(100+r.Intn(400)) * time.Millisecond)
+			time.Sleep(time.Duration(1000+r.Intn(1000)) * time.Millisecond)
 		}
 	}
 }

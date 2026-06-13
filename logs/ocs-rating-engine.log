@@ -20,3 +20,17 @@
 [ocs-rating-engine] 2026/06/13 19:26:50.535630 [INFO] RPC SUCCESS [Method: /pb.DiameterGy/RequestCreditControl] | Latency: 0s | Code: OK
 [ocs-rating-engine] 2026/06/13 19:29:44.124782 [INFO] Получен системный сигнал ядра Linux [interrupt]. Инициирован Graceful Shutdown...
 [ocs-rating-engine] 2026/06/13 19:29:44.125392 [INFO] Все сетевые сокеты и gRPC соединения успешно закрыты. Сервер остановлен штатно.
+[ocs-rating-engine] 2026/06/13 19:31:17.497358 [INFO] Инициализация финтех-ядра онлайн-биллинга OCS (Aerospike HMA Emulator)...
+[ocs-rating-engine] 2026/06/13 19:31:17.500014 [INFO] gRPC OCS-Биллинг сервер успешно запущен на :50054
+[ocs-rating-engine] 2026/06/13 19:31:36.743789 [INFO] RPC SUCCESS [Method: /pb.DiameterGy/RequestCreditControl] | Latency: 0s | Code: OK
+[ocs-rating-engine] 2026/06/13 19:31:36.744323 [INFO] RPC SUCCESS [Method: /pb.DiameterGy/RequestCreditControl] | Latency: 0s | Code: OK
+[ocs-rating-engine] 2026/06/13 19:31:36.860960 [INFO] RPC SUCCESS [Method: /pb.DiameterGy/RequestCreditControl] | Latency: 0s | Code: OK
+[ocs-rating-engine] 2026/06/13 19:31:36.860960 [INFO] RPC SUCCESS [Method: /pb.DiameterGy/RequestCreditControl] | Latency: 0s | Code: OK
+[ocs-rating-engine] 2026/06/13 19:31:37.227340 [INFO] RPC SUCCESS [Method: /pb.DiameterGy/RequestCreditControl] | Latency: 0s | Code: OK
+[ocs-rating-engine] 2026/06/13 19:31:37.227340 [INFO] RPC SUCCESS [Method: /pb.DiameterGy/RequestCreditControl] | Latency: 0s | Code: OK
+[ocs-rating-engine] 2026/06/13 19:31:37.395042 [INFO] RPC SUCCESS [Method: /pb.DiameterGy/RequestCreditControl] | Latency: 0s | Code: OK
+[ocs-rating-engine] 2026/06/13 19:31:37.395579 [INFO] RPC SUCCESS [Method: /pb.DiameterGy/RequestCreditControl] | Latency: 0s | Code: OK
+[ocs-rating-engine] 2026/06/13 19:31:37.691897 [INFO] RPC SUCCESS [Method: /pb.DiameterGy/RequestCreditControl] | Latency: 0s | Code: OK
+[ocs-rating-engine] 2026/06/13 19:31:37.691897 [INFO] RPC SUCCESS [Method: /pb.DiameterGy/RequestCreditControl] | Latency: 0s | Code: OK
+[ocs-rating-engine] 2026/06/13 19:34:00.072708 [INFO] Получен системный сигнал ядра Linux [interrupt]. Инициирован Graceful Shutdown...
+[ocs-rating-engine] 2026/06/13 19:34:00.073224 [INFO] Все сетевые сокеты и gRPC соединения успешно закрыты. Сервер остановлен штатно.
