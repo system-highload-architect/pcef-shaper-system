@@ -1,0 +1,7 @@
+service_name: "ofcs-collector"
+bind_addr: ":50055"
+log_level: "INFO"
+shutdown_timeout: 15
+
+kafka_brokers: "localhost:9092"
+clickhouse_addr: "localhost:8123"

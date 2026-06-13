@@ -1,0 +1,6 @@
+service_name: "af-gateway"
+bind_addr: ":50056"
+log_level: "INFO"
+shutdown_timeout: 15
+
+pcrf_addr: "localhost:50053"

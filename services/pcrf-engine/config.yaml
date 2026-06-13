@@ -1,0 +1,6 @@
+service_name: "pcrf-engine"
+bind_addr: ":50053"
+log_level: "INFO"
+shutdown_timeout: 15
+
+spr_addr: "localhost:9042"

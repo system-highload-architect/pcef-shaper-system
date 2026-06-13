@@ -1,0 +1,8 @@
+service_name: "ocs-rating-engine"
+bind_addr: ":50054"
+log_level: "INFO"
+shutdown_timeout: 15
+
+# Специфичные финтех-параметры OCS
+quota_chunk_bytes: 10485760 # Размер выдаваемого кванта (10 Мегабайт в байтах)
+initial_balance_bytes: 104857600 # Стартовый баланс тестового абонента (100 Мегабайт)

@@ -1,0 +1,6 @@
+service_name: "access-gateway-bng"
+bind_addr: ":50051"
+log_level: "INFO"
+shutdown_timeout: 15
+
+pcef_core_addr: "localhost:50052"

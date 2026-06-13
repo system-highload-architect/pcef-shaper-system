@@ -1,0 +1,9 @@
+service_name: "pcef-core-engine"
+bind_addr: ":50052"
+log_level: "INFO"
+shutdown_timeout: 15
+
+# Уникальные b2b-переменные, нужные ТОЛЬКО для ядра PCEF:
+pcrf_addr: "localhost:50053"
+ocs_addr: "localhost:50054"
+ofcs_addr: "localhost:50055"

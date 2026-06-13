@@ -1,0 +1,7 @@
+service_name: "ue-emulator-client"
+bind_addr: ":50059" # Служебный порт, балансировщик K8s для него отключен
+log_level: "INFO"
+shutdown_timeout: 5
+
+gateway_addr: "localhost:50051"
+simulated_subscribers: 1000 # Количество параллельных горутин-смартфонов
