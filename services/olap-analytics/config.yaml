@@ -1,0 +1,7 @@
+service_name: "olap-analytics-clickhouse-emulator"
+bind_addr: ":8123" # Канонический HTTP/gRPC порт ClickHouse
+log_level: "INFO"
+shutdown_timeout: 15
+
+# Куда сбрасывать "SSTables/Partitions" эмулятора на диск твоего ПК
+data_disk_path: "./data/clickhouse_mock_segments"

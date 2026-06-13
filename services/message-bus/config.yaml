@@ -1,0 +1,7 @@
+service_name: "message-bus-kafka-emulator"
+bind_addr: ":9092" # Канонический порт Kafka
+log_level: "INFO"
+shutdown_timeout: 15
+
+# Размер кольцевого буфера (Go-канала) для симуляции топика
+queue_capacity: 100000

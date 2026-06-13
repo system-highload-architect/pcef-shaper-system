@@ -1,0 +1,7 @@
+service_name: "spr-storage-emulator"
+bind_addr: ":9042" # Канонический порт ScyllaDB/Cassandra, переведенный на gRPC
+log_level: "INFO"
+shutdown_timeout: 15
+
+# Локальный лимит первоначальной емкости RAM-базы
+max_mock_profiles: 100000
