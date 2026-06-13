@@ -3,7 +3,8 @@ package grpc
 import (
 	"io"
 
-	"pcef-shaper-system/internal/pkg/logger" // Подключаем наше общее платформенное шасси / Shared chassis logger
+	"pcef-shaper-system/internal/pkg/logger"
+	"pcef-shaper-system/internal/pkg/ratelimit" // ИМПОРТИРУЕМ LOCK-FREE ЛИМИТЕР
 	gen "pcef-shaper-system/pb/gen"
 	"pcef-shaper-system/services/pcef-core/internal/app"
 
@@ -14,18 +15,19 @@ import (
 type GrpcHandler struct {
 	gen.UnimplementedTrafficPipelineServer
 	service app.ShaperEngine
-	log     *logger.AppLogger // Единый структурированный логер платформы / Centralized app logger
+	log     *logger.AppLogger
+	limiter *ratelimit.TokenBucketLimiter // Вшиваем L7-щит
 }
 
 func NewGrpcHandler(service app.ShaperEngine, log *logger.AppLogger) *GrpcHandler {
 	return &GrpcHandler{
 		service: service,
 		log:     log,
+		// Инициализируем лимитер: скорость 50 запросов в сек, максимальный всплеск — 100 токенов
+		limiter: ratelimit.NewTokenBucketLimiter(50.0, 100.0),
 	}
 }
 
-// ProcessTrafficStream — Full-Duplex бинарный поток HTTP/2 для наносекундного шейпинга трафика
-// ProcessTrafficStream — Full-Duplex binary HTTP/2 stream for nanosecond-level packet traffic shaping
 func (h *GrpcHandler) ProcessTrafficStream(stream gen.TrafficPipeline_ProcessTrafficStreamServer) error {
 	ctx := stream.Context()
 
@@ -34,8 +36,6 @@ func (h *GrpcHandler) ProcessTrafficStream(stream gen.TrafficPipeline_ProcessTra
 		case <-ctx.Done():
 			return ctx.Err()
 		default:
-			// Считываем входящий бинарный фрейм сетевого пакета из сокета шлюза доступа
-			// Ingesting incoming binary network packet frames directly from the gateway socket
 			frame, err := stream.Recv()
 			if err == io.EOF {
 				return nil
@@ -44,18 +44,23 @@ func (h *GrpcHandler) ProcessTrafficStream(stream gen.TrafficPipeline_ProcessTra
 				return status.Errorf(codes.DataLoss, "Failed to read network frame socket: %v", err)
 			}
 
-			// Прогоняем сетевой фрейм сквозь гибридный плоский конвейер ядра PCEF
-			// Routing the ingested packet frame through the flat hybrid PCEF shaper pipeline
+			// ЭШЕЛОН ЗАЩИТЫ: Бьем по Lock-Free лимитеру частоты запросов!
+			allowed, limitErr := h.limiter.Allow(ctx, frame.SourceIp)
+			if !allowed || limitErr != nil {
+				// Нарушитель обнаружен — мгновенно уничтожаем трафик на сетевой карте через XDP_DROP!
+				_ = stream.Send(&gen.EnforcementVerdict{
+					SourceIp: frame.SourceIp,
+					Action:   "XDP_DROP", // Жесткая отсечка
+				})
+				continue
+			}
+
 			verdict, err := h.service.ProcessPacket(ctx, frame)
 			if err != nil {
-				// Логируем инцидент нарушения/сбоя через платформенный логер в файл ротации
-				// Writing shaper processing anomalies directly into rolling lumberjack files
 				h.log.Error("Ошибка конвейера диспетчеризации PCEF: %v", err)
 				continue
 			}
 
-			// Атомарно бомбардируем шлюз ответным вердиктом применения QoS-политики в реальном времени
-			// Atomically transmitting enforcement QoS verdicts back to the gateway in real-time
 			if err := stream.Send(verdict); err != nil {
 				return status.Errorf(codes.Unavailable, "Failed to send enforcement verdict: %v", err)
 			}

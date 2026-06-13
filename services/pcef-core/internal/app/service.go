@@ -8,29 +8,30 @@ import (
 	"time"
 
 	"pcef-shaper-system/internal/pkg/dispatch"
+	"pcef-shaper-system/internal/pkg/lru" // ИМПОРТИРУЕМ ТВОЙ LRU КЭШ
 	gen "pcef-shaper-system/pb/gen"
 	"pcef-shaper-system/services/pcef-core/internal/domain"
 )
 
-// Битовые константы составных условий (Req. 6)
 const (
-	StateActive      uint64 = 1 << 0 // Абонент активен
-	TrafficStreaming uint64 = 1 << 1 // Тяжелый медиа-трафик
-	TrafficSocial    uint64 = 1 << 2 // Соцсети/Мессенджеры
-	PackSmall        uint64 = 1 << 3 // Сигнализация (до 1 КБ)
-	PackHeavy        uint64 = 1 << 4 // Тяжелый пакет фрейма
+	StateActive      uint64 = 1 << 0
+	TrafficStreaming uint64 = 1 << 1
+	TrafficSocial    uint64 = 1 << 2
+	PackSmall        uint64 = 1 << 3
+	PackHeavy        uint64 = 1 << 4
 )
 
 type CoreShard struct {
-	mu       sync.RWMutex
-	sessions map[string]*domain.SubscriberSession
+	// Мьютекс теперь охраняет только конкурентную аллокацию внутри кэша
+	mu  sync.RWMutex
+	lru *lru.ReactiveLruCache // Твой реактивный кэш вместо обычной мапы!
 }
 
 type PcefCoreService struct {
 	shards         []*CoreShard
 	shardCount     uint32
 	dispatchEngine *dispatch.TableDrivenEngine
-	dpiSignatures  map[string]uint64 // Карта SNI -> Бит типа трафика
+	dpiSignatures  map[string]uint64
 	ocsClient      gen.DiameterGyClient
 }
 
@@ -48,8 +49,24 @@ func NewPcefCoreService(ocsClient gen.DiameterGyClient) *PcefCoreService {
 		},
 	}
 
+	// Финтех-колбэк: при ленивом вытеснении сессии из кэша, асинхронно возвращаем остаток кванта по Gy
+	evictCallback := func(ipKey string) {
+		_, _ = s.ocsClient.RequestCreditControl(context.Background(), &gen.CreditControlRequest{
+			SessionId:    fmt.Sprintf("term_%s_%d", ipKey, time.Now().UnixNano()),
+			SubscriberId: "250010000000001", // Для демо мапим на дефолтного юзера
+			RequestType:  3,                 // TERMINATE
+			UsedBytes:    0,
+		})
+	}
+
+	// Внутри конструктора NewPcefCoreService, в цикле инициализации шардов:
 	for i := uint32(0); i < s.shardCount; i++ {
-		s.shards[i] = &CoreShard{sessions: make(map[string]*domain.SubscriberSession)}
+		cacheInstance := lru.NewReactiveLruCache(5000, 60*time.Second, evictCallback)
+		s.shards[i] = &CoreShard{
+			lru: cacheInstance,
+		}
+		// Включаем часовую страховку (для демо-тестов поставим интервал 1 минуту, на проде будет 1 час)
+		cacheInstance.StartHourlyJanitor(context.Background(), 1*time.Minute)
 	}
 
 	s.bootstrapDispatcher()
@@ -64,41 +81,37 @@ func (s *PcefCoreService) getShardIndex(key string) uint32 {
 
 func (s *PcefCoreService) RegisterSubscriber(ctx context.Context, imsi, ip, tariff string) {
 	idx := s.getShardIndex(ip)
-	s.shards[idx].mu.Lock()
-	defer s.shards[idx].mu.Unlock()
 
-	s.shards[idx].sessions[ip] = &domain.SubscriberSession{
+	sess := &domain.SubscriberSession{
 		IMSI:             imsi,
 		IP:               ip,
 		TariffClass:      tariff,
 		IsActive:         true,
-		CurrentBandwidth: 100 * 1024 * 1024, // По умолчанию 100 Mbps
+		CurrentBandwidth: 100 * 1024 * 1024,
 		LastHeartbeat:    time.Now(),
 	}
+
+	// Пишем через потокобезопасный метод Set твоего кэша
+	s.shards[idx].lru.Set(ip, sess)
 }
 
-// ProcessPacket — пиковый конвейер обработки L4-L7 фреймов без if-else каскадов
 func (s *PcefCoreService) ProcessPacket(ctx context.Context, frame *gen.RawPacketFrame) (*gen.EnforcementVerdict, error) {
-	// 1. Извлекаем сессию из шардированного кэша по IP за O(1) (Req. 4)
 	idx := s.getShardIndex(frame.SourceIp)
-	s.shards[idx].mu.RLock()
-	session, exists := s.shards[idx].sessions[frame.SourceIp]
-	s.shards[idx].mu.RUnlock()
 
+	// Вытаскиваем сессию из кэша с автоматической "ленивой" проверкой протухания за O(1)
+	val, exists := s.shards[idx].lru.Get(frame.SourceIp)
 	if !exists {
 		return &gen.EnforcementVerdict{SourceIp: frame.SourceIp, Action: "XDP_DROP"}, nil
 	}
+	session := val.(*domain.SubscriberSession)
 
-	// 2. Встроенный DPI-анализатор сигнатур хоста за O(1) (Req. 1)
 	trafficBit, isKnown := s.dpiSignatures[frame.DestinationHost]
 	if !isKnown {
-		trafficBit = TrafficSocial // Дефолтный fallback класс
+		trafficBit = TrafficSocial
 	}
 
-	// 3. Вычисление интервального диапазона пакета через Бинарный Поиск за O(log N) (Req. 6)
 	sizeBit := s.dispatchEngine.EvaluateRange(frame.PayloadSizeBytes)
 
-	// 4. Сборка композитной битовой маски оператором ИЛИ (Req. 6)
 	var bitmask uint64
 	if session.IsActive {
 		bitmask |= StateActive
@@ -106,27 +119,22 @@ func (s *PcefCoreService) ProcessPacket(ctx context.Context, frame *gen.RawPacke
 	bitmask |= trafficBit
 	bitmask |= sizeBit
 
-	// 5. Онлайн-квитирование по Gy Diameter интерфейсу (Req. 2)
-	// Перед пропуском пакета идем в ocs-rating за квантом
 	resp, err := s.ocsClient.RequestCreditControl(ctx, &gen.CreditControlRequest{
 		SessionId:    fmt.Sprintf("sess_%s_%d", session.IMSI, time.Now().UnixNano()),
 		SubscriberId: session.IMSI,
 		ChargingKey:  uint32(trafficBit),
-		RequestType:  2, // UPDATE/Квантование
+		RequestType:  2,
 		UsedBytes:    uint64(frame.PayloadSizeBytes),
 	})
 
-	// Пограничное условие: Баланс исчерпан (Код отсечки 4012)
 	if err != nil || resp.ResultCode == 4012 {
 		return &gen.EnforcementVerdict{
 			SourceIp:         frame.SourceIp,
 			Action:           "THROTTLE",
-			AllowedBandwidth: 64 * 1024, // Жесткий шейпинг до 64 Кбит/с по ТЗ
+			AllowedBandwidth: 64 * 1024,
 		}, nil
 	}
 
-	// 6. Табличная диспетчеризация за O(1) без if-else ветвлений (Req. 5)
-	// Передаем маску в наш общий движок, который выполнит привязанную функцию
 	err = s.dispatchEngine.Execute(ctx, bitmask, session, frame)
 	if err != nil {
 		return nil, err
@@ -140,35 +148,27 @@ func (s *PcefCoreService) ProcessPacket(ctx context.Context, frame *gen.RawPacke
 }
 
 func (s *PcefCoreService) bootstrapDispatcher() {
-	// Конфигурируем шкалу интервалов пакетов для бинарного поиска
-	s.dispatchEngine.AddRangeConfig(1024, PackSmall)         // Сигнализация до 1 КБ
-	s.dispatchEngine.AddRangeConfig(999999999999, PackHeavy) // Тяжелый контент
+	s.dispatchEngine.AddRangeConfig(1024, PackSmall)
+	s.dispatchEngine.AddRangeConfig(999999999999, PackHeavy)
 
-	// 1. Комбинация: Активен + Видео-Стриминг + Тяжелый Пакет фрейма
 	maskStreaming := StateActive | TrafficStreaming | PackHeavy
 	s.dispatchEngine.RegisterAction(maskStreaming, func(ctx context.Context, args ...any) error {
-		sess := args[0].(*domain.SubscriberSession) // Исправлено извлечение из variadic slice
-		sess.CurrentBandwidth = 50 * 1024 * 1024    // Выделяем 50 Mbps под YouTube
-		sess.QosClassIdentifier = 6
+		sess := args[0].(*domain.SubscriberSession) // Извлекаем по индексу из variadic slice
+		sess.CurrentBandwidth = 50 * 1024 * 1024
 		return nil
 	})
 
-	// 2. Комбинация: Активен + Мессенджеры + Маленький Пакет (Пинг)
 	maskSocialPing := StateActive | TrafficSocial | PackSmall
 	s.dispatchEngine.RegisterAction(maskSocialPing, func(ctx context.Context, args ...any) error {
 		sess := args[0].(*domain.SubscriberSession)
-		sess.CurrentBandwidth = 100 * 1024 * 1024 // Максимальная скорость для пингов
-		sess.QosClassIdentifier = 1               // Наивысший Low-Latency приоритет 3GPP
+		sess.CurrentBandwidth = 100 * 1024 * 1024
 		return nil
 	})
 
-	// 3. ФИКС БАГА 0x15: Комбинация: Активен + Мессенджеры + Тяжелый Пакет (Пересылка файлов в Telegram)
-	// FIXED 0x15: Active + TrafficSocial + PackHeavy -> Allocate 10 Mbps background data rate
 	maskSocialHeavy := StateActive | TrafficSocial | PackHeavy
 	s.dispatchEngine.RegisterAction(maskSocialHeavy, func(ctx context.Context, args ...any) error {
 		sess := args[0].(*domain.SubscriberSession)
-		sess.CurrentBandwidth = 10 * 1024 * 1024 // Выделяем 10 Mbps под тяжелые медиа-файлы соцсетей
-		sess.QosClassIdentifier = 8              // Стандартный приоритет Best-Effort
+		sess.CurrentBandwidth = 10 * 1024 * 1024
 		return nil
 	})
 }

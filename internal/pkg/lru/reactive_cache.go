@@ -2,12 +2,13 @@ package lru
 
 import (
 	"container/list"
+	"context"
+	"runtime" // Импортируем для ручного форсирования Garbage Collector
 	"sync"
 	"time"
 )
 
-// EvictCallback — финтех-функция для асинхронного возврата квот в OCS при вытеснении сессии
-type EvictCallback func(imsi string)
+type EvictCallback func(key string)
 
 type cacheEntry struct {
 	key           string
@@ -15,7 +16,6 @@ type cacheEntry struct {
 	lastHeartbeat time.Time
 }
 
-// ReactiveLruCache реализует ленивое вытеснение по тайм-ауту без фоновых воркеров (Req. 4)
 type ReactiveLruCache struct {
 	mu          sync.RWMutex
 	capacity    int
@@ -35,9 +35,8 @@ func NewReactiveLruCache(capacity int, idleTimeout time.Duration, onEvict EvictC
 	}
 }
 
-// Get извлекает сессию с ленивой проверкой протухания за O(1)
 func (c *ReactiveLruCache) Get(key string) (any, bool) {
-	c.mu.Lock() // Используем Lock, так как чтение перемещает узел в списке (мутация)
+	c.mu.Lock()
 	defer c.mu.Unlock()
 
 	element, exists := c.items[key]
@@ -47,29 +46,23 @@ func (c *ReactiveLruCache) Get(key string) (any, bool) {
 
 	entry := element.Value.(*cacheEntry)
 
-	// ПАТТЕРН ДАВИДА: Ленивая проверка протухания на горячем пути
 	if time.Since(entry.lastHeartbeat) > c.idleTimeout {
-		// Сессия протухла — реактивно уничтожаем её, освобождая RAM
 		c.removeElement(element)
-		// Асинхронно триггерим финтех-возврат денег в OCS биллинг
 		if c.onEvict != nil {
 			go c.onEvict(entry.key)
 		}
 		return nil, false
 	}
 
-	// Сессия жива — продлеваем Heartbeat и двигаем в топ списка (Move to Front)
 	entry.lastHeartbeat = time.Now()
 	c.evictList.MoveToFront(element)
 	return entry.value, true
 }
 
-// Set добавляет сессию. Если лимит превышен — реактивно вычищает "хвост" за O(1)
 func (c *ReactiveLruCache) Set(key string, value any) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
-	// Если ключ уже есть, просто обновляем значение и таймстамп
 	if element, exists := c.items[key]; exists {
 		c.evictList.MoveToFront(element)
 		entry := element.Value.(*cacheEntry)
@@ -78,25 +71,70 @@ func (c *ReactiveLruCache) Set(key string, value any) {
 		return
 	}
 
-	// Создаем новый узел и пихаем в топ хронологической шкалы
 	entry := &cacheEntry{key: key, value: value, lastHeartbeat: time.Now()}
 	element := c.evictList.PushFront(entry)
 	c.items[key] = element
 
-	// Проверяем пограничное условие превышения лимита емкости памяти
-	if c.evictList.Len() > c.capacity {
-		// Мгновенно смотрим на самый старый неактивный элемент в хвосте списка (O(1))
-		tailElement := c.evictList.Back()
-		if tailElement != nil {
-			tailEntry := tailElement.Value.(*cacheEntry)
+	// Каскадное сжатие Давида при переполнении
+	c.evictTailCascade()
+}
 
-			// Вытесняем мертвую или самую старую сессию из RAM
+// StartHourlyJanitor страхует систему в Read-Heavy режиме, вычищая хвост раз в час
+// StartHourlyJanitor safeguards Read-Heavy states, purging the tail once per hour
+func (c *ReactiveLruCache) StartHourlyJanitor(ctx context.Context, checkInterval time.Duration) {
+	ticker := time.NewTicker(checkInterval)
+	go func() {
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			case <-ticker.C:
+				c.mu.Lock()
+				// Проверяем самый крайний элемент. Если он жив — весь список выше него гарантированно жив
+				tailElement := c.evictList.Back()
+				if tailElement != nil {
+					tailEntry := tailElement.Value.(*cacheEntry)
+					if time.Since(tailEntry.lastHeartbeat) > c.idleTimeout {
+						// Запускаем каскадное сжатие
+						evictedCount := c.evictTailCascade()
+						c.mu.Unlock()
+
+						// Если мы выкинули массив протухших сессий, помогаем рантайму освободить RAM
+						if evictedCount > 0 {
+							// Принудительно запускаем сборщик мусора в неблокирующем режиме
+							runtime.GC()
+						}
+						continue
+					}
+				}
+				c.mu.Unlock()
+			}
+		}
+	}()
+}
+
+// evictTailCascade — внутреннее ядро каскадного сжатия (Должно вызываться под Lock!)
+func (c *ReactiveLruCache) evictTailCascade() int {
+	evictedCount := 0
+	for c.evictList.Len() > c.capacity {
+		tailElement := c.evictList.Back()
+		if tailElement == nil {
+			break
+		}
+
+		tailEntry := tailElement.Value.(*cacheEntry)
+
+		if time.Since(tailEntry.lastHeartbeat) > c.idleTimeout {
 			c.removeElement(tailElement)
+			evictedCount++
 			if c.onEvict != nil {
 				go c.onEvict(tailEntry.key)
 			}
+			continue
 		}
+		break
 	}
+	return evictedCount
 }
 
 func (c *ReactiveLruCache) removeElement(e *list.Element) {
