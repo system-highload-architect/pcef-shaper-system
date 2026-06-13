@@ -1,24 +1,28 @@
 package logger
 
 import (
+	"fmt"
 	"log"
+	"os"
+	"path/filepath"
 
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
-// AppLogger инкапсулирует структурированное логирование и ротацию файлов
 type AppLogger struct {
 	fileLogger *log.Logger
 }
 
-// NewAppLogger инициализирует кольцевой буфер логирования под лимиты K8s
 func NewAppLogger(serviceName, logLevel string) *AppLogger {
-	// Настраиваем ротацию lumberjack для защиты диска от переполнения
+	// Автоматически создаем папку для логов, если её нет на диске Windows/Linux
+	logDir := "./logs"
+	_ = os.MkdirAll(logDir, 0755)
+
 	lumberjackLogger := &lumberjack.Logger{
-		Filename:   "./logs/" + serviceName + ".log",
-		MaxSize:    10,   // Максимум 10 Мегабайт на файл
-		MaxBackups: 3,    // Хранить ровно 3 старых бэкапа
-		Compress:   true, // Сжимать старые логи в .gz
+		Filename:   filepath.Join(logDir, serviceName+".log"),
+		MaxSize:    10,   // 10 Мегабайт
+		MaxBackups: 3,    // 3 бэкапа
+		Compress:   true, // Сжатие в .gz
 	}
 
 	return &AppLogger{
@@ -27,16 +31,20 @@ func NewAppLogger(serviceName, logLevel string) *AppLogger {
 }
 
 func (l *AppLogger) Info(format string, v ...any) {
-	log.Printf("[INFO] "+format, v...)
-	l.fileLogger.Printf("[INFO] "+format, v...)
+	msg := fmt.Sprintf(format, v...)
+	log.Printf("[INFO] %s", msg)
+	l.fileLogger.Printf("[INFO] %s", msg)
 }
 
 func (l *AppLogger) Error(format string, v ...any) {
-	log.Printf("[ERROR] "+format, v...)
-	l.fileLogger.Printf("[ERROR] "+format, v...)
+	msg := fmt.Sprintf(format, v...)
+	log.Printf("[ERROR] %s", msg)
+	l.fileLogger.Printf("[ERROR] %s", msg)
 }
 
 func (l *AppLogger) Fatal(format string, v ...any) {
-	l.fileLogger.Printf("[FATAL] "+format, v...)
-	log.Fatalf("[FATAL] "+format, v...)
+	msg := fmt.Sprintf(format, v...)
+	log.Printf("[FATAL] %s", msg)
+	l.fileLogger.Printf("[FATAL] %s", msg)
+	os.Exit(1)
 }

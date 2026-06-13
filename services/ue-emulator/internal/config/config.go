@@ -17,13 +17,17 @@ type Config struct {
 
 func LoadConfig(yamlPath string) *Config {
 	base := config.LoadBaseConfig(yamlPath)
-	cfg := &Config{BaseConfig: *base}
+	cfg := &Config{
+		BaseConfig:           *base,
+		GatewayAddr:          "localhost:50052", // ПУЛЕНЕПРОБИВАЕМЫЙ ДЕФОЛТ ПОРТА К ЯДРУ PCEF-CORE
+		SimulatedSubscribers: 5,
+	}
 
 	if data, err := os.ReadFile(yamlPath); err == nil {
 		_ = yaml.Unmarshal(data, cfg)
 	}
 
-	if envGateway := os.Getenv("ACCESS_GATEWAY_ADDR"); envGateway != "" {
+	if envGateway := os.Getenv("PCEF_CORE_ADDR"); envGateway != "" {
 		cfg.GatewayAddr = envGateway
 	}
 	if envSubs := os.Getenv("SIMULATED_SUBSCRIBERS_COUNT"); envSubs != "" {
