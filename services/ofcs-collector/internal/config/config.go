@@ -16,7 +16,11 @@ type Config struct {
 
 func LoadConfig(yamlPath string) *Config {
 	base := config.LoadBaseConfig(yamlPath)
-	cfg := &Config{BaseConfig: *base}
+	cfg := &Config{
+		BaseConfig:     *base,
+		KafkaBrokers:   "localhost:9092",
+		ClickhouseAddr: "localhost:8123", // Наш дефолтный порт эмулятора ClickHouse
+	}
 
 	if data, err := os.ReadFile(yamlPath); err == nil {
 		_ = yaml.Unmarshal(data, cfg)
