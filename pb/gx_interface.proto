@@ -1,1 +1,22 @@
+syntax = "proto3";
+
+package pb;
+option go_package = "pcef-shaper-system/pb;pb";
+
 // PCRF ➔ PCEF
+//Контракт доставки правил сигнализации Gx: PCRF ➔ PCEF
+service DiameterGx {
+    // Загрузка PCC-правил из мозга сети (PCRF) в исполнитель (PCEF)
+    rpc ProvisionPccRules(PccRulesProvision) returns (PccRulesAck);
+}
+
+message PccRulesProvision {
+    string imsi = 1;
+    string ip_address = 2;
+    repeated string active_rule_names = 3; // Список правил: ["YouTube_Premium", "Social_Unlim"]
+}
+
+message PccRulesAck {
+    bool is_enforced = 1;
+    uint32 result_code = 2;
+}

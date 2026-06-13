@@ -1,1 +1,23 @@
+syntax = "proto3";
+
+package pb;
+option go_package = "pcef-shaper-system/pb;pb";
+
 // AF-Gateway ➔ PCRF-Engine
+// Контракт сигнализации Diameter Rx: AF ➔ PCRF
+service DiameterRx {
+    // AA-Request / AA-Answer: Запрос на выделение полосы под медиа-поток (IPTV/CDN)
+    rpc SendAAQuery(MediaSessionRequest) returns (MediaSessionResponse);
+}
+
+message MediaSessionRequest {
+    string subscriber_id = 1;    // MSISDN / IMSI абонента
+    string media_ip = 2;         // IP-адрес сервера вещания
+    string required_qos = 3;     // Класс обслуживания: "VIDEO_4K", "VOIP"
+    int64 duration_seconds = 4;  // Время жизни сессии
+}
+
+message MediaSessionResponse {
+    uint32 result_code = 1;      // Канонический Diameter код (2001 - SUCCESS, 5004 - INVALID_AVP)
+    string session_id = 2;       // UUID сессии в Control Plane
+}

@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pcef-global-config
+  namespace: default
+data:
+  # Наносекундное внутреннее сетевое Service Discovery K8s
+  ACCESS_GATEWAY_ADDR: "access-gateway-service:50051"
+  PCEF_CORE_ADDR: "pcef-core-service:50052"
+  PCRF_ENGINE_ADDR: "pcrf-engine-service:50053"
+  OCS_RATING_ADDR: "ocs-rating-service:50054"
+  OFCS_COLLECTOR_ADDR: "ofcs-collector-service:50055"
+  AF_GATEWAY_ADDR: "af-gateway-service:50056"
+  
+  # Инфраструктурные компоненты (Заглушки / Будущие кластера)
+  SCYLLADB_HOSTS: "scylladb-service:9042"
+  KAFKA_BROKERS: "kafka-service:9092"
+  CLICKHOUSE_ADDR: "clickhouse-service:8123"
+  
+  # Параметры ТЗ
+  GY_QUOTA_CHUNK_MB: "10"
+  QOS_DEFAULT_THROTTLE_KBPS: "64"
+  MAP_SHARD_COUNT: "32"

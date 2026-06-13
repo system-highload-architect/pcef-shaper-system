@@ -1,1 +1,26 @@
+syntax = "proto3";
+
+package pb;
+option go_package = "pcef-shaper-system/pb;pb";
+
+import "google/protobuf/timestamp.proto";
+
 // UE-Emulator ➔ Access-Gateway ➔ PCEF-Core
+// Контракт передачи сырого L4-L7 трафика
+service TrafficPipeline {
+    // Стриминг сетевых фреймов от Шлюза в PCEF-Core движок
+    rpc ProcessTrafficStream(stream RawPacketFrame) returns (stream EnforcementVerdict);
+}
+
+message RawPacketFrame {
+    string source_ip = 1;        // IP-адрес абонента (UE IP)
+    string destination_host = 2; // SNI / Host назначения (например, youtube.com)
+    int64 payload_size_bytes = 3;// Физический размер пакета в байтах
+    google.protobuf.Timestamp timestamp = 4;
+}
+
+message EnforcementVerdict {
+    string source_ip = 1;
+    string action = 2;           // Системный вердикт: "ALLOW", "THROTTLE", "XDP_DROP"
+    int64 allowed_bandwidth = 3; // Скорость в битах/сек, выделенная QoS-шейпером
+}

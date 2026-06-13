@@ -1,1 +1,28 @@
+syntax = "proto3";
+
+package pb;
+option go_package = "pcef-shaper-system/pb;pb";
+
+import "google/protobuf/timestamp.proto";
+
 // PCEF-Core ➔ OFCS-Collector
+// Контракт асинхронных оффлайн-логов Gz: PCEF ➔ OFCS Kafka
+service DiameterGz {
+    // Асинхронный слив CDR логов пачками
+    rpc StreamCdrLogs(BulkCdrPack) returns (CdrAck);
+}
+
+message CallDetailRecord {
+    string record_id = 1;
+    string subscriber_id = 2;
+    int64 bytes_dumped = 3;
+    google.protobuf.Timestamp timestamp = 4;
+}
+
+message BulkCdrPack {
+    repeated CallDetailRecord records = 1; // Пачка ровно по 30 штук согласно ТЗ
+}
+
+message CdrAck {
+    bool is_committed = 1;
+}

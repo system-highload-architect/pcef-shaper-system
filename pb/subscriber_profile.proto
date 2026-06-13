@@ -1,1 +1,22 @@
+syntax = "proto3";
+
+package pb;
+option go_package = "pcef-shaper-system/pb;pb";
+
 // PCRF-Engine ➔ SPR-Storage
+// Контракт базы данных SPR: PCRF ➔ SPR
+service SubscriptionRepository {
+    // Извлечение b2b-паспорта контракта из ScyllaDB
+    rpc FetchProfile(ProfileRequest) returns (SubscriberProfileResponse);
+}
+
+message ProfileRequest {
+    string imsi = 1;
+}
+
+message SubscriberProfileResponse {
+    string imsi = 1;
+    string tariff_class = 2;     // "VIP", "BASE", "IOT"
+    bool is_suspended = 3;       // Финансовая блокировка
+    int64 granted_bytes = 4;     // Общий лимит интернет-пакета в байтах
+}

@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pcef-core-deployment
+  namespace: default
+  labels:
+    app: pcef-core
+spec:
+  replicas: 1 # Стартуем с 1 пода, Кубер дорастит до 3+ при штурме трафика
+  selector:
+    matchLabels:
+      app: pcef-core
+  template:
+    metadata:
+      labels:
+        app: pcef-core
+    spec:
+      containers:
+      - name: go-pcef-shaper
+        image: pcef-core:local
+        imagePullPolicy: Never # Заставляем Kind брать образ из локального докер-кэша
+        ports:
+        - containerPort: 50052
+        # Инъекция конфигурации из центрального ConfigMap
+        envFrom:
+        - configMapRef:
+            name: pcef-global-config
+        # Промышленные лимиты ресурсов
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "250m" # 0.25 ядра CPU (Requests гарантируют выделение)
+          limits:
+            memory: "256Mi"
+            cpu: "1000m" # 1 полное ядро CPU (Лимит защищает ноду)
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pcef-core-service
+  namespace: default
+spec:
+  selector:
+    app: pcef-core
+  ports:
+  - protocol: TCP
+    port: 50052      # Порт балансировщика K8s
+    targetPort: 50052 # На какой порт пода проксировать фреймы HTTP/2
+  type: ClusterIP   # Внутренний пуленепробиваемый L4-балансировщик Round-Robin
+---
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: pcef-core-autoscaler
+  namespace: default
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: pcef-core-deployment
+  minReplicas: 1
+  maxReplicas: 3    # Наше ТЗ: авто-увеличение до 3 экземпляров ядра при нагрузке!
+  targetCPUUtilizationPercentage: 70 # Рост реплик при загрузке CPU > 70%

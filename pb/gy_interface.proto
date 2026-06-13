@@ -1,1 +1,25 @@
+syntax = "proto3";
+
+package pb;
+option go_package = "pcef-shaper-system/pb;pb";
+
 // PCEF ➔ OCS
+// Контракт онлайн-биллинга Gy: PCEF ➔ OCS Aerospike
+service DiameterGy {
+    // Credit-Control-Request / Answer: Резервирование и списание квантов по 10 МБ
+    rpc RequestCreditControl(CreditControlRequest) returns (CreditControlAnswer);
+}
+
+message CreditControlRequest {
+    string session_id = 1;
+    string subscriber_id = 2;
+    uint32 charging_key = 3;       // Категория трафика: 10 (Streaming), 20 (Social)
+    uint32 request_type = 4;       // 1 - INITIAL, 2 - UPDATE, 3 - TERMINATE
+    uint64 used_bytes = 5;         // Сколько байт реально потрачено из прошлого кванта
+}
+
+message CreditControlAnswer {
+    string session_id = 1;
+    uint32 result_code = 2;        // 2001 - SUCCESS, 4012 - CREDIT_LIMIT_REACHED
+    uint64 granted_bytes = 3;      // Выделенный квант (ТЗ: 10 МБ или остаток)
+}
