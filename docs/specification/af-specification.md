@@ -25,6 +25,6 @@ sequenceDiagram
 
 ---
 
-### 🛠️ Выигрыш и Обоснование технологий / Technology Justification & Benefits
+### 🛠️ Выигрыш и обоснование технологий / Technology Justification & Benefits
 * **[RU]** **Технология: HTTP/2 gRPC -> Diameter Gateway на Go.** Выигрыш: использование пула горутин и неблокирующего I/O (`epoll`) позволяет обрабатывать миллионы b2b-сессий стриминга параллельно с задержкой в пределах <2 миллисекунд, транслируя текстовые API-запросы в ультрабыстрые бинарные Diameter-пакеты.
 * **[EN]** **Technology: HTTP/2 gRPC to Diameter Gateway in Go.** Benefits: utilizing a goroutine worker pool and non-blocking I/O (`epoll`) enables parallel processing of millions of b2b streaming sessions with latency under <2ms, translating text-based APIs into ultra-fast binary Diameter packets.

@@ -24,6 +24,6 @@ sequenceDiagram
 
 ---
 
-### 🛠️ Выигрыш и Обоснование технологий / Technology Justification & Benefits
+### 🛠️ Выигрыш и обоснование технологий / Technology Justification & Benefits
 * **[RU]** **Технология: Rete Algorithm / Движок правил в RAM на Go.** Выигрыш: вместо тяжелых дисковых вычислений правила компилируются в памяти с использованием битовых масок и Lock-Free стейт-машин. Это позволяет менять политику шейпинга абонента на лету за наносекунды при наступлении триггеров (например, наступил час пик — срезаем скорость торрентов).
 * **[EN]** **Technology: Rete Algorithm / Memory-resident rule engine in Go.** Benefits: instead of heavy disk-bound computations, rules are compiled in RAM utilizing bitmasks and Lock-Free state machines. This enables changing a subscriber's shaping policy on the fly within nanoseconds upon triggers (e.g., rush hour -> throttle torrents).

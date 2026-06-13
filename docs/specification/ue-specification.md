@@ -23,6 +23,6 @@ sequenceDiagram
 
 ---
 
-### 🛠️ Выигрыш и Обоснование технологий / Technology Justification & Benefits
+### 🛠️ Выигрыш и обоснование технологий / Technology Justification & Benefits
 * **[RU]** **В контексте нашего Go-тестирования**: мы напишем легковесный многопоточный **генератор-эмулятор трафика (Traffic Generator)**. Каждая горутина будет имитировать поведение отдельного UE, бомбардируя наш PCEF Core пакетами разного типа (со случайным джиттером времени). Это позволит нам наглядно замерить пропускную способность (`Throughput`) шейпера на бенчмарках.
 * **[EN]** **In our Go testing context**: we will implement a lightweight, highly concurrent **Traffic Generator emulator**. Each goroutine will mimic an independent UE behavior, bombarding our PCEF Core with various packet profiles (utilizing random jitter delays). This will allow us to directly measure the shaper's throughput via performance benchmarks.
