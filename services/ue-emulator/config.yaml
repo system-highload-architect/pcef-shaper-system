@@ -3,5 +3,5 @@ bind_addr: ":50059" # Служебный порт, балансировщик K8
 log_level: "INFO"
 shutdown_timeout: 5
 
-gateway_addr: "localhost:50051"
+gateway_addr: "localhost:50052"
 simulated_subscribers: 1000 # Количество параллельных горутин-смартфонов

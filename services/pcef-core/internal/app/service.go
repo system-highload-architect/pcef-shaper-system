@@ -144,22 +144,31 @@ func (s *PcefCoreService) bootstrapDispatcher() {
 	s.dispatchEngine.AddRangeConfig(1024, PackSmall)         // Сигнализация до 1 КБ
 	s.dispatchEngine.AddRangeConfig(999999999999, PackHeavy) // Тяжелый контент
 
-	// Кэшируем комбинации условий в хэш-таблицу функций
-	// Комбинация: Активен + Видео-Стриминг + Тяжелый Пакет фрейма
+	// 1. Комбинация: Активен + Видео-Стриминг + Тяжелый Пакет фрейма
 	maskStreaming := StateActive | TrafficStreaming | PackHeavy
 	s.dispatchEngine.RegisterAction(maskStreaming, func(ctx context.Context, args ...any) error {
-		sess := args[0].(*domain.SubscriberSession)
-		sess.CurrentBandwidth = 50 * 1024 * 1024 // Выделяем 50 Mbps под YouTube
+		sess := args[0].(*domain.SubscriberSession) // Исправлено извлечение из variadic slice
+		sess.CurrentBandwidth = 50 * 1024 * 1024    // Выделяем 50 Mbps под YouTube
 		sess.QosClassIdentifier = 6
 		return nil
 	})
 
-	// Комбинация: Активен + Мессенджеры + Маленький Пакет (Пинг)
+	// 2. Комбинация: Активен + Мессенджеры + Маленький Пакет (Пинг)
 	maskSocialPing := StateActive | TrafficSocial | PackSmall
 	s.dispatchEngine.RegisterAction(maskSocialPing, func(ctx context.Context, args ...any) error {
 		sess := args[0].(*domain.SubscriberSession)
 		sess.CurrentBandwidth = 100 * 1024 * 1024 // Максимальная скорость для пингов
 		sess.QosClassIdentifier = 1               // Наивысший Low-Latency приоритет 3GPP
+		return nil
+	})
+
+	// 3. ФИКС БАГА 0x15: Комбинация: Активен + Мессенджеры + Тяжелый Пакет (Пересылка файлов в Telegram)
+	// FIXED 0x15: Active + TrafficSocial + PackHeavy -> Allocate 10 Mbps background data rate
+	maskSocialHeavy := StateActive | TrafficSocial | PackHeavy
+	s.dispatchEngine.RegisterAction(maskSocialHeavy, func(ctx context.Context, args ...any) error {
+		sess := args[0].(*domain.SubscriberSession)
+		sess.CurrentBandwidth = 10 * 1024 * 1024 // Выделяем 10 Mbps под тяжелые медиа-файлы соцсетей
+		sess.QosClassIdentifier = 8              // Стандартный приоритет Best-Effort
 		return nil
 	})
 }

@@ -18,7 +18,7 @@ import (
 )
 
 func main() {
-	cfg := config.LoadConfig("config.yaml")
+	cfg := config.LoadConfig("services/pcef-core/config.yaml")
 	log := logger.NewAppLogger(cfg.ServiceName, cfg.LogLevel)
 	log.Info("Запуск Исполнительного Ядра Трафика PCEF Core (User Plane Go Engine)...")
 

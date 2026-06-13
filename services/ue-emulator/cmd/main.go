@@ -25,7 +25,7 @@ func (a *ShutdownAdapter) GracefulStop() {
 
 func main() {
 	// 1. Загрузка конфигурационного шасси
-	cfg := config.LoadConfig("config.yaml")
+	cfg := config.LoadConfig("services/ue-emulator/config.yaml")
 
 	// 2. Инициализация единого структурированного логера платформы
 	log := logger.NewAppLogger(cfg.ServiceName, cfg.LogLevel)
