@@ -38,7 +38,7 @@ func main() {
 	coreEngine.RegisterSubscriber(context.Background(), "250010000000001", "192.168.1.50", "VIP")
 	coreEngine.RegisterSubscriber(context.Background(), "250010000000002", "192.168.1.51", "BASE")
 
-	grpcHandler := transport.NewGrpcHandler(coreEngine)
+	grpcHandler := transport.NewGrpcHandler(coreEngine, log)
 
 	server := grpc.NewServer(
 		grpc.UnaryInterceptor(interceptors.UnaryServerInterceptor(log)),
