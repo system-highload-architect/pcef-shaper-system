@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: af-gateway-deployment
+  namespace: default
+  labels:
+    app: af-gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: af-gateway
+  template:
+    metadata:
+      labels:
+        app: af-gateway
+    spec:
+      containers:
+      - name: go-af-gateway
+        image: af-gateway:local
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 50056
+        envFrom:
+        - configMapRef:
+            name: pcef-global-config
+        resources:
+          requests:
+            memory: "32Mi"
+            cpu: "100m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: af-gateway-service
+  namespace: default
+spec:
+  selector:
+    app: af-gateway
+  ports:
+  - protocol: TCP
+    port: 50056
+    targetPort: 50056
+  type: ClusterIP

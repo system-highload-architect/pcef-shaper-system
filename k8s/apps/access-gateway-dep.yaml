@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: access-gateway-deployment
+  namespace: default
+  labels:
+    app: access-gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: access-gateway
+  template:
+    metadata:
+      labels:
+        app: access-gateway
+    spec:
+      containers:
+      - name: go-gateway
+        image: access-gateway:local
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 50051
+        envFrom:
+        - configMapRef:
+            name: pcef-global-config
+        resources:
+          requests:
+            memory: "32Mi"
+            cpu: "100m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: access-gateway-service
+  namespace: default
+spec:
+  selector:
+    app: access-gateway
+  ports:
+  - protocol: TCP
+    port: 50051
+    targetPort: 50051
+  type: ClusterIP

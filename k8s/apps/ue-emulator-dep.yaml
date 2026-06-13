@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ue-emulator-deployment
+  namespace: default
+  labels:
+    app: ue-emulator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ue-emulator
+  template:
+    metadata:
+      labels:
+        app: ue-emulator
+    spec:
+      containers:
+      - name: go-ue-emulator
+        image: ue-emulator:local
+        imagePullPolicy: Never
+        envFrom:
+        - configMapRef:
+            name: pcef-global-config
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+          limits:
+            memory: "256Mi"
+            cpu: "1000m"

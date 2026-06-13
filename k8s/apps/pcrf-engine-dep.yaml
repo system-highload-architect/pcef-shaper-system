@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pcrf-engine-deployment
+  namespace: default
+  labels:
+    app: pcrf-engine
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pcrf-engine
+  template:
+    metadata:
+      labels:
+        app: pcrf-engine
+    spec:
+      containers:
+      - name: go-pcrf
+        image: pcrf-engine:local
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 50053
+        envFrom:
+        - configMapRef:
+            name: pcef-global-config
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "200m"
+          limits:
+            memory: "256Mi"
+            cpu: "1000m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pcrf-engine-service
+  namespace: default
+spec:
+  selector:
+    app: pcrf-engine
+  ports:
+  - protocol: TCP
+    port: 50053
+    targetPort: 50053
+  type: ClusterIP

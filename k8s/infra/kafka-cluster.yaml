@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-deployment
+  namespace: default
+  labels:
+    app: kafka
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka
+  template:
+    metadata:
+      labels:
+        app: kafka
+    spec:
+      containers:
+      - name: kafka-broker
+        image: ubuntu/kafka:3.1-22.04_beta
+        ports:
+        - containerPort: 9092
+        env:
+        - name: ZOOKEEPER_HOST
+          value: "localhost"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "1000m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka-service
+  namespace: default
+spec:
+  selector:
+    app: kafka
+  ports:
+  - port: 9092
+  type: ClusterIP

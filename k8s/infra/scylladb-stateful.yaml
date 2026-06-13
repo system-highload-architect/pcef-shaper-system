@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: scylladb
+  namespace: default
+spec:
+  serviceName: "scylladb-service"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: scylladb
+  template:
+    metadata:
+      labels:
+        app: scylladb
+    spec:
+      containers:
+      - name: scylla
+        image: scylladb/scylla:5.2.0
+        ports:
+        - containerPort: 9042 # Native CQL Port
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "1Gi"
+            cpu: "2000m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: scylladb-service
+  namespace: default
+spec:
+  selector:
+    app: scylladb
+  ports:
+  - port: 9042
+  type: ClusterIP

@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ocs-rating-deployment
+  namespace: default
+  labels:
+    app: ocs-rating
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ocs-rating
+  template:
+    metadata:
+      labels:
+        app: ocs-rating
+    spec:
+      containers:
+      - name: go-ocs-rating
+        image: ocs-rating:local
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 50054
+        envFrom:
+        - configMapRef:
+            name: pcef-global-config
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "500m"
+          limits:
+            memory: "256Mi"
+            cpu: "2000m" # Требует больше вычислительной мощности для sync/atomic
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ocs-rating-service
+  namespace: default
+spec:
+  selector:
+    app: ocs-rating
+  ports:
+  - protocol: TCP
+    port: 50054
+    targetPort: 50054
+  type: ClusterIP

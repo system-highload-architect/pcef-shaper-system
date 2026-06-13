@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ofcs-collector-deployment
+  namespace: default
+  labels:
+    app: ofcs-collector
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ofcs-collector
+  template:
+    metadata:
+      labels:
+        app: ofcs-collector
+    spec:
+      containers:
+      - name: go-ofcs-collector
+        image: ofcs-collector:local
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 50055
+        envFrom:
+        - configMapRef:
+            name: pcef-global-config
+        resources:
+          requests:
+            memory: "32Mi"
+            cpu: "100m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ofcs-collector-service
+  namespace: default
+spec:
+  selector:
+    app: ofcs-collector
+  ports:
+  - protocol: TCP
+    port: 50055
+    targetPort: 50055
+  type: ClusterIP

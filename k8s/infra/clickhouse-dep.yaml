@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: clickhouse-deployment
+  namespace: default
+  labels:
+    app: clickhouse
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: clickhouse
+  template:
+    metadata:
+      labels:
+        app: clickhouse
+    spec:
+      containers:
+      - name: clickhouse-server
+        image: clickhouse/clickhouse-server:23.3-alpine
+        ports:
+        - containerPort: 8123 # HTTP Interface
+        - containerPort: 9000 # Native Client Port
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "500m"
+          limits:
+            memory: "1Gi"
+            cpu: "2000m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: clickhouse-service
+  namespace: default
+spec:
+  selector:
+    app: clickhouse
+  ports:
+  - name: http
+    port: 8123
+  - name: native
+    port: 9000
+  type: ClusterIP
