@@ -8,6 +8,7 @@ import (
 	"pcef-shaper-system/internal/pkg/logger"
 	"pcef-shaper-system/internal/pkg/shutdown"
 	gen "pcef-shaper-system/pb/gen"
+	"pcef-shaper-system/services/af-gateway/internal/app"
 	"pcef-shaper-system/services/af-gateway/internal/config"
 	transport "pcef-shaper-system/services/af-gateway/transport/grpc"
 
@@ -20,11 +21,22 @@ func main() {
 	log := logger.NewAppLogger(cfg.ServiceName, cfg.LogLevel)
 	log.Info("Запуск Шлюза Контент-Провайдеров AF Gateway (Diameter Rx)...")
 
-	pcrfConn, _ := grpc.Dial(cfg.PcrfAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	// 1. Инициализируем gRPC-клиент к PCRF движку (Control Plane)
+	pcrfConn, err := grpc.Dial(cfg.PcrfAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Fatal("Не удалось установить соединение с PCRF по адресу %s: %v", cfg.PcrfAddr, err)
+	}
 	defer pcrfConn.Close()
-	pcrfClient := gen.NewDiameterGxClient(pcrfConn)
+	// (Этот клиент понадобится в будущем для проксирования Rx -> Gx сигнализации)
+	_ = gen.NewDiameterGxClient(pcrfConn)
 
-	grpcHandler := transport.NewGrpcHandler(pcrfClient, log)
+	// 2. ИСПРАВЛЕНО: Собираем локальные слои DDD через интерфейсную абстракцию
+	// FIXED: Initializing the local app service domain layer and binding it to the interface
+	var afCore app.RxSessionManager = app.NewAfService(log)
+
+	// 3. ИСПРАВЛЕНО: Прокидываем в конструктор транспорта наш локальный сервис afCore, а не pcrfClient!
+	// FIXED: Injecting the local afCore implementation instead of the foreign pcrfClient proxy
+	grpcHandler := transport.NewGrpcHandler(afCore, log)
 
 	server := grpc.NewServer(
 		grpc.UnaryInterceptor(interceptors.UnaryServerInterceptor(log)),
@@ -38,7 +50,9 @@ func main() {
 
 	go func() {
 		log.Info("gRPC AF-Gateway успешно запущен на %s", cfg.BindAddr)
-		_ = server.Serve(listener)
+		if err := server.Serve(listener); err != nil {
+			log.Fatal("Крах рантайма gRPC сервера AF-Gateway: %v", err)
+		}
 	}()
 
 	shutdown.ListenSignals(log, server, time.Duration(cfg.ShutdownTimeout)*time.Second)

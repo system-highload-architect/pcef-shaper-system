@@ -6,28 +6,35 @@ import (
 
 	"pcef-shaper-system/internal/pkg/logger"
 	gen "pcef-shaper-system/pb/gen"
+	"pcef-shaper-system/services/af-gateway/internal/app"
 )
 
 type GrpcHandler struct {
 	gen.UnimplementedDiameterRxServer
-	pcrfCli gen.DiameterGxClient // Клиент к PCRF
+	service app.RxSessionManager // ИСПРАВЛЕНО: Зависим строго от абстракции интерфейса!
 	log     *logger.AppLogger
 }
 
-func NewGrpcHandler(pcrf gen.DiameterGxClient, log *logger.AppLogger) *GrpcHandler {
-	return &GrpcHandler{pcrfCli: pcrf, log: log}
+func NewGrpcHandler(service app.RxSessionManager, log *logger.AppLogger) *GrpcHandler {
+	return &GrpcHandler{service: service, log: log}
 }
 
 func (h *GrpcHandler) SendAAQuery(ctx context.Context, req *gen.MediaSessionRequest) (*gen.MediaSessionResponse, error) {
-	h.log.Info("AF Rx Gateway -> Получен запрос от CDN на выделение 4K-полосы для абонента %s", req.SubscriberId)
+	h.log.Info("AF Rx Gateway -> Получен gRPC запрос от CDN на выделение полосы для абонента %s", req.SubscriberId)
 
-	// Асинхронно взводим неблокирующий таймер отмены SLA-приоритета (Защита от утечек горутин)
-	time.AfterFunc(time.Duration(req.DurationSeconds)*time.Second, func() {
-		h.log.Info("AF Rx Gateway -> Время сессии %s истекло. SLA приоритет отозван.", req.SubscriberId)
+	// Вызываем Use Case слой через интерфейс
+	session, err := h.service.AuthorizeMediaSession(ctx, req.SubscriberId, "VIDEO_4K", req.DurationSeconds)
+	if err != nil {
+		return &gen.MediaSessionResponse{ResultCode: 5012, SessionId: ""}, nil // DIAMETER_UNABLE_TO_COMPLY
+	}
+
+	// Асинхронный таймер отмены SLA-приоритета
+	time.AfterFunc(time.Until(session.ExpiresAt), func() {
+		h.log.Info("AF Rx Gateway -> Время жизни сессии %s истекло. SLA приоритет отозван.", session.SessionID)
 	})
 
 	return &gen.MediaSessionResponse{
 		ResultCode: 2001, // DIAMETER_SUCCESS
-		SessionId:  "rx_session_cdn_999",
+		SessionId:  session.SessionID,
 	}, nil
 }

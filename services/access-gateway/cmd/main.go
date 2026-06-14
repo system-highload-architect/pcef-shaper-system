@@ -28,7 +28,7 @@ func main() {
 	defer pcrfConn.Close()
 	pcrfClient := gen.NewDiameterGxClient(pcrfConn)
 
-	gateway := app.NewGatewayService(pcrfClient, log)
+	var gateway app.RadiusSessionSignaling = app.NewGatewayService(pcrfClient, log)
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()

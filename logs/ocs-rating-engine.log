@@ -213,3 +213,50 @@
 [ocs-rating-engine] 2026/06/14 11:57:17.983290 [INFO] RPC SUCCESS [Method: /pb.DiameterGy/RequestCreditControl] | Latency: 0s | Code: OK
 [ocs-rating-engine] 2026/06/14 11:57:18.474752 [INFO] Получен системный сигнал ядра Linux [interrupt]. Инициирован Graceful Shutdown...
 [ocs-rating-engine] 2026/06/14 11:57:18.481187 [INFO] Все сетевые сокеты и gRPC соединения успешно закрыты. Сервер остановлен штатно.
+[ocs-rating-engine] 2026/06/14 19:34:49.644430 [INFO] Инициализация финтех-ядра онлайн-биллинга OCS (Aerospike HMA Emulator)...
+[ocs-rating-engine] 2026/06/14 19:34:49.647325 [INFO] gRPC OCS-Биллинг сервер успешно запущен на :50054
+[ocs-rating-engine] 2026/06/14 19:34:56.108084 [INFO] RPC SUCCESS [Method: /pb.DiameterGy/RequestCreditControl] | Latency: 0s | Code: OK
+[ocs-rating-engine] 2026/06/14 19:34:56.120929 [INFO] RPC SUCCESS [Method: /pb.DiameterGy/RequestCreditControl] | Latency: 0s | Code: OK
+[ocs-rating-engine] 2026/06/14 19:34:57.750825 [INFO] RPC SUCCESS [Method: /pb.DiameterGy/RequestCreditControl] | Latency: 0s | Code: OK
+[ocs-rating-engine] 2026/06/14 19:34:57.911185 [INFO] RPC SUCCESS [Method: /pb.DiameterGy/RequestCreditControl] | Latency: 0s | Code: OK
+[ocs-rating-engine] 2026/06/14 19:34:59.684058 [INFO] RPC SUCCESS [Method: /pb.DiameterGy/RequestCreditControl] | Latency: 0s | Code: OK
+[ocs-rating-engine] 2026/06/14 19:34:59.864898 [INFO] RPC SUCCESS [Method: /pb.DiameterGy/RequestCreditControl] | Latency: 0s | Code: OK
+[ocs-rating-engine] 2026/06/14 19:35:00.718064 [INFO] RPC SUCCESS [Method: /pb.DiameterGy/RequestCreditControl] | Latency: 0s | Code: OK
+[ocs-rating-engine] 2026/06/14 19:35:01.484684 [INFO] RPC SUCCESS [Method: /pb.DiameterGy/RequestCreditControl] | Latency: 0s | Code: OK
+[ocs-rating-engine] 2026/06/14 19:35:02.710488 [INFO] RPC SUCCESS [Method: /pb.DiameterGy/RequestCreditControl] | Latency: 0s | Code: OK
+[ocs-rating-engine] 2026/06/14 19:35:02.736394 [INFO] RPC SUCCESS [Method: /pb.DiameterGy/RequestCreditControl] | Latency: 0s | Code: OK
+[ocs-rating-engine] 2026/06/14 19:35:04.310802 [INFO] RPC SUCCESS [Method: /pb.DiameterGy/RequestCreditControl] | Latency: 0s | Code: OK
+[ocs-rating-engine] 2026/06/14 19:35:04.658549 [INFO] RPC SUCCESS [Method: /pb.DiameterGy/RequestCreditControl] | Latency: 0s | Code: OK
+[ocs-rating-engine] 2026/06/14 19:35:05.988472 [INFO] RPC SUCCESS [Method: /pb.DiameterGy/RequestCreditControl] | Latency: 0s | Code: OK
+[ocs-rating-engine] 2026/06/14 19:35:06.146025 [INFO] RPC SUCCESS [Method: /pb.DiameterGy/RequestCreditControl] | Latency: 0s | Code: OK
+[ocs-rating-engine] 2026/06/14 19:35:07.080561 [INFO] RPC SUCCESS [Method: /pb.DiameterGy/RequestCreditControl] | Latency: 0s | Code: OK
+[ocs-rating-engine] 2026/06/14 19:35:07.289139 [INFO] RPC SUCCESS [Method: /pb.DiameterGy/RequestCreditControl] | Latency: 0s | Code: OK
+[ocs-rating-engine] 2026/06/14 19:35:08.333045 [INFO] RPC SUCCESS [Method: /pb.DiameterGy/RequestCreditControl] | Latency: 0s | Code: OK
+[ocs-rating-engine] 2026/06/14 19:35:08.901495 [INFO] RPC SUCCESS [Method: /pb.DiameterGy/RequestCreditControl] | Latency: 0s | Code: OK
+[ocs-rating-engine] 2026/06/14 19:35:09.894080 [INFO] RPC SUCCESS [Method: /pb.DiameterGy/RequestCreditControl] | Latency: 0s | Code: OK
+[ocs-rating-engine] 2026/06/14 19:35:10.175478 [INFO] RPC SUCCESS [Method: /pb.DiameterGy/RequestCreditControl] | Latency: 0s | Code: OK
+[ocs-rating-engine] 2026/06/14 19:35:11.500964 [INFO] RPC SUCCESS [Method: /pb.DiameterGy/RequestCreditControl] | Latency: 0s | Code: OK
+[ocs-rating-engine] 2026/06/14 19:35:11.779460 [INFO] Получен системный сигнал ядра Linux [interrupt]. Инициирован Graceful Shutdown...
+[ocs-rating-engine] 2026/06/14 19:35:11.783198 [INFO] Все сетевые сокеты и gRPC соединения успешно закрыты. Сервер остановлен штатно.
+[ocs-rating-engine] 2026/06/14 19:37:10.004630 [INFO] Инициализация финтех-ядра онлайн-биллинга OCS (Aerospike HMA Emulator)...
+[ocs-rating-engine] 2026/06/14 19:37:10.006761 [INFO] gRPC OCS-Биллинг сервер успешно запущен на :50054
+[ocs-rating-engine] 2026/06/14 19:37:16.384283 [INFO] RPC SUCCESS [Method: /pb.DiameterGy/RequestCreditControl] | Latency: 0s | Code: OK
+[ocs-rating-engine] 2026/06/14 19:37:16.388020 [INFO] RPC SUCCESS [Method: /pb.DiameterGy/RequestCreditControl] | Latency: 0s | Code: OK
+[ocs-rating-engine] 2026/06/14 19:37:17.795218 [INFO] RPC SUCCESS [Method: /pb.DiameterGy/RequestCreditControl] | Latency: 0s | Code: OK
+[ocs-rating-engine] 2026/06/14 19:37:18.107749 [INFO] RPC SUCCESS [Method: /pb.DiameterGy/RequestCreditControl] | Latency: 0s | Code: OK
+[ocs-rating-engine] 2026/06/14 19:37:18.824621 [INFO] RPC SUCCESS [Method: /pb.DiameterGy/RequestCreditControl] | Latency: 0s | Code: OK
+[ocs-rating-engine] 2026/06/14 19:37:19.462079 [INFO] RPC SUCCESS [Method: /pb.DiameterGy/RequestCreditControl] | Latency: 0s | Code: OK
+[ocs-rating-engine] 2026/06/14 19:37:20.764654 [INFO] RPC SUCCESS [Method: /pb.DiameterGy/RequestCreditControl] | Latency: 0s | Code: OK
+[ocs-rating-engine] 2026/06/14 19:37:21.047208 [INFO] RPC SUCCESS [Method: /pb.DiameterGy/RequestCreditControl] | Latency: 0s | Code: OK
+[ocs-rating-engine] 2026/06/14 19:37:22.532193 [INFO] RPC SUCCESS [Method: /pb.DiameterGy/RequestCreditControl] | Latency: 0s | Code: OK
+[ocs-rating-engine] 2026/06/14 19:37:22.562247 [INFO] RPC SUCCESS [Method: /pb.DiameterGy/RequestCreditControl] | Latency: 0s | Code: OK
+[ocs-rating-engine] 2026/06/14 19:37:23.556447 [INFO] RPC SUCCESS [Method: /pb.DiameterGy/RequestCreditControl] | Latency: 0s | Code: OK
+[ocs-rating-engine] 2026/06/14 19:37:24.190547 [INFO] RPC SUCCESS [Method: /pb.DiameterGy/RequestCreditControl] | Latency: 0s | Code: OK
+[ocs-rating-engine] 2026/06/14 19:37:24.633465 [INFO] RPC SUCCESS [Method: /pb.DiameterGy/RequestCreditControl] | Latency: 0s | Code: OK
+[ocs-rating-engine] 2026/06/14 19:37:25.237641 [INFO] RPC SUCCESS [Method: /pb.DiameterGy/RequestCreditControl] | Latency: 0s | Code: OK
+[ocs-rating-engine] 2026/06/14 19:37:26.232213 [INFO] RPC SUCCESS [Method: /pb.DiameterGy/RequestCreditControl] | Latency: 0s | Code: OK
+[ocs-rating-engine] 2026/06/14 19:37:26.699785 [INFO] RPC SUCCESS [Method: /pb.DiameterGy/RequestCreditControl] | Latency: 0s | Code: OK
+[ocs-rating-engine] 2026/06/14 19:37:28.074995 [INFO] RPC SUCCESS [Method: /pb.DiameterGy/RequestCreditControl] | Latency: 0s | Code: OK
+[ocs-rating-engine] 2026/06/14 19:37:28.317099 [INFO] RPC SUCCESS [Method: /pb.DiameterGy/RequestCreditControl] | Latency: 0s | Code: OK
+[ocs-rating-engine] 2026/06/14 19:37:29.240231 [INFO] Получен системный сигнал ядра Linux [interrupt]. Инициирован Graceful Shutdown...
+[ocs-rating-engine] 2026/06/14 19:37:29.243452 [INFO] Все сетевые сокеты и gRPC соединения успешно закрыты. Сервер остановлен штатно.
