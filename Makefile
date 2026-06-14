@@ -1,10 +1,8 @@
-# --- ПАРАМЕТРЫ СБОРКИ И ОКРУЖЕНИЯ / ARTIFACT ENVELOPE CONFIG ---
+# --- ПАРАМЕТРЫ СБОРКИ И ОКРУЖЕНИЯ / RUNTIME ARTIFACT MESH ---
 .PHONY: all proto lint test build-all k8s-deploy-infra k8s-deploy-apps help
 
 all: help
 
-# 1. Генерация Protobuf-контрактов для всех интерфейсов 3GPP PCC
-# 1. Spawning typed Go code generation from all 3GPP PCC proto definitions
 proto:
 	@echo "⚙️ Компиляция Protobuf контрактов в Go-структуры..."
 	@mkdir -p pb/gen
@@ -13,49 +11,41 @@ proto:
 	       pb/*.proto
 	@echo "✅ Все контракты успешно скомпилированы в pb/gen/"
 
-# 2. Статический анализ кодовой базы на антипаттерны и утечки
-# 2. Static linting execution checking code for anomalies and goroutine leaks
 lint:
 	@echo "🛡️ Запуск статического анализа golangci-lint..."
 	golangci-lint run ./services/... ./internal/...
 
-# 3. Запуск юнит-тестов с жестким профайлингом скрытых гонок данных
-# 3. Unit-testing suite execution with aggressive race condition tracking
 test:
 	@echo "⚡ Тестирование Highload контуров на наличие Race Conditions..."
 	go test -v -race -timeout 30s ./services/... ./internal/...
 
-# 4. Сборка Docker образов для всех 7 микросервисов в локальный кэш
-# 4. Building local Multi-Stage Docker images for all 7 independent services
+# 4. Сборка Docker образов для всех 10 узлов монорепозитория согласно матрице go.work
+# 4. Packing 10 deterministic Go docker containers aligned with active go.work setup
 build-all: proto
-	@echo "📦 Сборка Docker контейнеров для Go-микросервисов..."
-	@for service in access-gateway af-gateway ocs-rating ofcs-collector pcef-core pcrf-engine ue-emulator; do \
-		echo "⚙️ Сборка образа для [$$service]..."; \
-		docker build -t $$service:local -f services/$$service/Dockerfile . ; \
-	 Eagle \
+	@echo "📦 Сборка Multi-Stage Docker контейнеров на базе Go 1.26..."
+	@for service in access-gateway af-gateway message-bus ocs-rating ofcs-collector olap-analytics pcef-core pcrf-engine spr-storage ue-emulator; do \
+		echo "⚙️ Сборка сжатого образа для [pcef-$$service:local]..."; \
+		docker build -t pcef-$$service:local --build-arg SERVICE_PATH=services/$$service -f Dockerfile . ; \
+		echo "✅ Модуль [$$service] успешно упакован."; \
 	done
-	@echo "✅ Сборка всех 7 образов завершена успешно!"
+	@echo "🎉 Сборка всех 10 образов завершена! Слой виртуализации готов."
 
-# 5. Развертывание 3-х узлов инфраструктуры баз данных и очередей в Kubernetes
-# 5. Spawning 3 heavy infrastructure stateful nodes into active Kubernetes namespace
 k8s-deploy-infra:
-	@echo "🏛️ Развертывание тяжелой инфраструктуры (ScyllaDB, Kafka, ClickHouse)..."
+	@echo "🏛️ Развертывание тяжелой инфраструктуры в Kubernetes..."
 	kubectl apply -f k8s/pcef-configmap.yaml
 	kubectl apply -f k8s/infra/
-	@echo "⏳ Инфраструктура создана. Проверьте статус подов через: kubectl get pods"
+	@echo "⏳ Базы данных и очереди запущены."
 
-# 6. Развертывание 7 Go-микросервисов в рантайм Кубера
-# 6. Spawning 7 custom Go-microservices into active Kubernetes cluster mesh
 k8s-deploy-apps: build-all
-	@echo "🚀 Накатывание 7 Go-микросервисов в кластер Kubernetes..."
+	@echo "🚀 Накатывание 7 Go-микросервисов в рантайм Kubernetes..."
 	kubectl apply -f k8s/apps/
-	@echo "🎉 Весь распределенный 3GPP PCC контур успешно развернут в K8s!"
+	@echo "🎉 Весь распределенный 3GPP PCC контур успешно развернут в K8s кластере!"
 
 help:
-	@echo "🏛️ ПУЛЬТ УПРАВЛЕНИЯ PCEF SHAPER CLUSTER MAKEFILE:"
+	@echo "🏛️ ПУЛЬТ УПРАВЛЕНИЯ PCEF SHAPER CLUSTER (GO WORKSPACES 1.26):"
 	@echo "  make proto             - Скомпилировать Protobuf контракты"
-	@echo "  make lint              - Запустить гоу линтеры"
-	@echo "  make test              - Запустить тесты с флагом -race"
-	@echo "  make build-all         - Собрать Docker образы для всех сервисов"
+	@echo "  make lint              - Запустить линтеры"
+	@echo "  make test              - Запустить юнит-тесты на Race Conditions"
+	@echo "  make build-all         - Собрать Multi-Stage Docker образы для 10 сервисов"
 	@echo "  make k8s-deploy-infra  - Развернуть СУБД и Брокеры в K8s"
 	@echo "  make k8s-deploy-apps   - Скомпилировать и раскатать 7 Go-сервисов в K8s"
