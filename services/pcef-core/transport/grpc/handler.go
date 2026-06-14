@@ -1,6 +1,7 @@
 package grpc
 
 import (
+	"context"
 	"io"
 
 	"pcef-shaper-system/internal/pkg/logger"
@@ -14,9 +15,12 @@ import (
 
 type GrpcHandler struct {
 	gen.UnimplementedTrafficPipelineServer
+	// ДОБАВЛЯЕМ СТРОКУ (Встраиваем нереализованный сервер Gx для прохождения проверок компилятора):
+	gen.UnimplementedDiameterGxServer
+
 	service app.ShaperEngine
 	log     *logger.AppLogger
-	limiter *ratelimit.TokenBucketLimiter // Вшиваем L7-щит
+	limiter *ratelimit.TokenBucketLimiter
 }
 
 func NewGrpcHandler(service app.ShaperEngine, log *logger.AppLogger) *GrpcHandler {
@@ -66,4 +70,19 @@ func (h *GrpcHandler) ProcessTrafficStream(stream gen.TrafficPipeline_ProcessTra
 			}
 		}
 	}
+}
+
+// Добавляем к структуре GrpcHandler поддержку контракта DiameterGxServer
+// (Убедись, что в cmd/main.go вызван gen.RegisterDiameterGxServer(server, grpcHandler))
+func (h *GrpcHandler) ProvisionPccRules(ctx context.Context, req *gen.PccRulesProvision) (*gen.PccRulesAck, error) {
+	tariff := "BASE"
+	if len(req.ActiveRuleNames) > 0 && req.ActiveRuleNames[0] == "VIP_UNLIMITED" {
+		tariff = "VIP"
+	}
+
+	// Динамически регистрируем сессию абонента в RAM ядра по RADIUS-триггеру!
+	h.service.RegisterSubscriber(ctx, req.Imsi, req.IpAddress, tariff)
+
+	h.log.Info("PCEF Core Gx -> Сессия Абонента [%s] успешно взведена в Reactive LRU Cache по сигналу PCRF", req.IpAddress)
+	return &gen.PccRulesAck{IsEnforced: true, ResultCode: 2001}, nil
 }

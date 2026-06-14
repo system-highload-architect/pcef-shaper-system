@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"net"
 	"time"
 
@@ -34,16 +33,14 @@ func main() {
 	// Dependency Injection слоев архитектуры
 	coreEngine := app.NewPcefCoreService(ocsClient)
 
-	// Наполняем кэш тестовыми абонентами (Имитируем RADIUS-авторизацию шлюза)
-	coreEngine.RegisterSubscriber(context.Background(), "250010000000001", "192.168.1.50", "VIP")
-	coreEngine.RegisterSubscriber(context.Background(), "250010000000002", "192.168.1.51", "BASE")
-
 	grpcHandler := transport.NewGrpcHandler(coreEngine, log)
 
 	server := grpc.NewServer(
 		grpc.UnaryInterceptor(interceptors.UnaryServerInterceptor(log)),
 	)
+	// Внутри main, где регистрируются gRPC интерфейсы, добавь вторую строчку:
 	gen.RegisterTrafficPipelineServer(server, grpcHandler)
+	gen.RegisterDiameterGxServer(server, grpcHandler) // Включаем прием Gx правил!
 
 	listener, err := net.Listen("tcp", cfg.BindAddr)
 	if err != nil {

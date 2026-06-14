@@ -31,7 +31,7 @@ func (h *GrpcHandler) ProvisionPccRules(ctx context.Context, req *gen.PccRulesPr
 	}
 
 	// Вызываем эшелон бизнес-логики (Use Cases)
-	profile, err := h.service.CompileRules(ctx, req.Imsi)
+	profile, err := h.service.CompileRules(ctx, req.Imsi, req.IpAddress)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "PCRF compilation engine failure: %v", err)
 	}

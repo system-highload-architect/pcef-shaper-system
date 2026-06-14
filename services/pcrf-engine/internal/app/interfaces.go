@@ -7,5 +7,5 @@ import (
 )
 
 type PolicyEngine interface {
-	CompileRules(ctx context.Context, imsi string) (*domain.PolicyProfile, error)
+	CompileRules(ctx context.Context, imsi string, ipAddr string) (*domain.PolicyProfile, error)
 }

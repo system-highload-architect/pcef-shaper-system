@@ -21,13 +21,27 @@ func main() {
 	log := logger.NewAppLogger(cfg.ServiceName, cfg.LogLevel)
 	log.Info("Запуск Движка Сетевых Политик PCRF Engine (Control Plane)...")
 
-	// Подключаемся к базе профилей ScyllaDB (spr-storage)
-	sprConn, _ := grpc.Dial(cfg.SprAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	// 1. Подключаемся к базе профилей ScyllaDB (spr-storage)
+	sprConn, err := grpc.Dial(cfg.SprAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Fatal("Не удалось подключиться к SPR по адресу %s: %v", cfg.SprAddr, err)
+	}
 	defer sprConn.Close()
+	// ИСПРАВЛЕНО: Объявляем sprClient корректно
 	sprClient := gen.NewSubscriptionRepositoryClient(sprConn)
 
-	pcrfCore := app.NewPcrfService(sprClient)
-	// Находим строчку сборки хэндлера и добавляем туда наш логер 'log'
+	// 2. Подключаемся к исполнительному ядру pcef-core по Gx интерфейсу (порт 50052)
+	pcefConn, err := grpc.Dial("localhost:50052", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Fatal("Не удалось подключиться к PCEF-Core: %v", err)
+	}
+	defer pcefConn.Close()
+
+	// ИСПРАВЛЕНО: Для отправки Gx правил создаем строго NewDiameterGxClient!
+	pcefGxClient := gen.NewDiameterGxClient(pcefConn)
+
+	// Собираем слои через DI
+	pcrfCore := app.NewPcrfService(sprClient, pcefGxClient)
 	grpcHandler := transport.NewGrpcHandler(pcrfCore, log)
 
 	server := grpc.NewServer(
