@@ -1,39 +1,26 @@
-# 🗺️ PCEF Architecture Navigation Index / Индекс навигации по архитектуре PCEF
+# 🗺️ PCEF Architecture & SRS Navigation Index / Индекс базы знаний PCEF
 
-[RU] Этот документ является единой точкой навигации по низкоуровневой архитектуре эшелонов Policy and Charging Control (PCC). Каждый компонент изолирован в отдельную спецификацию, описывающую внутреннее устройство, стейт-машины, утилизацию ресурсов и протоколы взаимодействия.
+[RU] Этот документ является единой точкой навигации по низкоуровневой архитектуре, диаграммам последовательностей и техническим требованиям (SRS) системы Policy and Charging Control (PCC).
 
-[EN] This document serves as a unified navigation index for the low-level Policy and Charging Control (PCC) architecture layers. Each component is isolated into a separate specification detailing its internal mechanics, state machines, resource utilization, and interaction protocols.
-
----
-
-## 📦 Control Plane Components / Компоненты плоскости управления
-
-*   ### [🚀 Application Function (AF)](./specification/af-specification.md)
-    *   [RU] Управление контентом динамических b2b-сессий, SLA-запросы, интерфейс Rx (Diameter).
-    *   [EN] Dynamic b2b session content management, SLA enforcement requests, Rx interface (Diameter).
-*   ### [⚙️ Policy & Charging Rules Function (PCRF)](./specification/pcrf-specification.md)
-    *   [RU] Центральное ядро бизнес-логики, компиляция PCC-правил, оркестрация интерфейсов Gx/Sp.
-    *   [EN] Central business logic core, PCC rules compilation, Gx/Sp interfaces orchestration.
-*   ### [🗄️ Subscription Profile Repository (SPR / UDR)](./specification/spr-specification.md)
-    *   [RU] Хранилище профилей абонентов, тарифов и b2b-лимитов, оптимизация схем данных.
-    *   [EN] Subscriber profiles, tariffs, and b2b limits repository, data schema optimization.
-*   ### [💸 Online Charging System (OCS)](./specification/ocs-specification.md)
-    *   [RU] Система реального времени тарификации, квантование трафика (Quota Reservation), интерфейс Gy.
-    *   [EN] Real-time online rating engine, traffic quantization (Quota Reservation), Gy interface.
-*   ### [📊 Offline Charging System (OFCS)](./specification/ofcs-specification.md)
-    *   [RU] Система отложенного биллинга, CDR-сборщики (Call Detail Records), экспорт в ClickHouse, интерфейс Gz.
-    *   [EN] Post-paid billing engine, CDR (Call Detail Records) collectors, ClickHouse export, Gz interface.
-*   ### [🔒 RADIUS / AAA Server](./specification/aaa-specification.md)
-    *   [RU] Аутентификация, авторизация и аккаунтинг сессий, управление пулами IP-адресов.
-    *   [EN] Authentication, authorization, and session accounting, IP pool management.
+[EN] This document serves as a unified navigation index for the low-level architecture, sequence charts, and Technical Requirements Specifications (SRS) of the PCC system.
 
 ---
 
-## 🟢 User Plane Components / Компоненты плоскости пользователя
+## 📦 Component Specifications & Mermaid Diagrams / Архитектура и Диаграммы
 
-*   ### [📱 User Equipment (UE)](./specification/ue-specification.md)
-    *   [RU] Терминалы абонентов, генерация L4-L7 трафика, джиттер и сетевые профили нагрузок.
-    *   [EN] Subscriber end-user terminals, L4-L7 traffic generation, jitter, and network load profiling.
-*   ### [🌐 Access Gateway (BNG / PGW / UPF)](./specification/gateway-specification.md)
-    *   [RU] Шлюзы терминации трафика, DPDK/eBPF магистрали, RADIUS-сигнализация UDP (1812/1813).
-    *   [EN] Traffic termination gateways, DPDK/eBPF pipelines, RADIUS UDP signaling (1812/1813).
+*   ### [🚀 Application Function (AF)](./specification/af-specification.md) — Сигнализация Diameter Rx.
+*   ### [⚙️ Policy & Charging Rules Function (PCRF)](./specification/pcrf-specification.md) — Движок политик Gx/Sp.
+*   ### [🗄️ Subscription Profile Repository (SPR)](./specification/spr-specification.md) — База профилей ScyllaDB.
+*   ### [💸 Online Charging System (OCS)](./specification/ocs-specification.md) — Квантование Gy в Aerospike.
+*   ### [📊 Offline Charging System (OFCS)](./specification/ofcs-specification.md) — Асинхронные CDR логи в Kafka/ClickHouse.
+*   ### [🔒 RADIUS / AAA Server](./specification/aaa-specification.md) — UDP перехват сессий.
+*   ### [🌐 Access Gateway (BNG / UPF)](./specification/gateway-specification.md) — eBPF/XDP Kernel Bypass.
+*   ### [📱 User Equipment (UE)](./specification/ue-specification.md) — Высоконагруженный генератор трафика.
+
+---
+
+## 📋 Technical Requirements Specification (SRS) / Технические требования ТЗ
+
+*   ### [🛡️ PCEF Core Requirements](./srs/pcef-core-srs.md) — Табличная диспетчеризация $O(1)$ и inline DPI классификатор.
+*   ### [⚡ Lock-Free Rate Limiter Requirements](./srs/ratelimit-srs.md) — Защита L7 от DDoS на CAS-циклах процессора.
+*   ### [📦 Reactive LRU Cache Requirements](./srs/lru-cache-srs.md) — Каскадное вытеснение и `runtime.GC()`.
