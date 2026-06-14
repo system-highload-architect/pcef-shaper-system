@@ -2,7 +2,7 @@
 # STAGE 1: LOCK-FREE COMPILATION ENGINE (BUILD STAGE)
 # =================================================================
 # Используем строго версию Go 1.26 для нативной поддержки воркспейса
-FROM golang:1.26-alpine3.19 AS builder
+FROM golang:1.26-alpine AS builder
 
 RUN apk add --no-cache git gcc musl-dev make
 

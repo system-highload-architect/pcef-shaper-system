@@ -14,3 +14,28 @@
 [pcef-core-engine] 2026/06/14 11:00:45.315347 [INFO] gRPC PCEF-Core поток обработки фреймов успешно запущен на :50052
 [pcef-core-engine] 2026/06/14 11:02:22.735460 [INFO] Получен системный сигнал ядра Linux [interrupt]. Инициирован Graceful Shutdown...
 [pcef-core-engine] 2026/06/14 11:02:22.735460 [INFO] Все сетевые сокеты и gRPC соединения успешно закрыты. Сервер остановлен штатно.
+[pcef-core-engine] 2026/06/14 11:42:50.406582 [INFO] Запуск Исполнительного Ядра Трафика PCEF Core (User Plane Go Engine)...
+[pcef-core-engine] 2026/06/14 11:42:50.408193 [INFO] Observability Core -> HTTP-порт сбора OpenTelemetry/Prometheus метрик успешно запущен на :8080/metrics
+[pcef-core-engine] 2026/06/14 11:42:50.411423 [INFO] gRPC PCEF-Core поток обработки фреймов успешно запущен на :50052
+[pcef-core-engine] 2026/06/14 11:47:12.647175 [INFO] Получен системный сигнал ядра Linux [interrupt]. Инициирован Graceful Shutdown...
+[pcef-core-engine] 2026/06/14 11:47:12.649364 [INFO] Все сетевые сокеты и gRPC соединения успешно закрыты. Сервер остановлен штатно.
+[pcef-core-engine] 2026/06/14 11:54:42.852520 [INFO] Запуск Исполнительного Ядра Трафика PCEF Core (User Plane Go Engine)...
+[pcef-core-engine] 2026/06/14 11:54:42.854529 [INFO] Observability Core -> HTTP-порт сбора OpenTelemetry/Prometheus метрик успешно запущен на :8080/metrics
+[pcef-core-engine] 2026/06/14 11:54:42.856530 [INFO] gRPC PCEF-Core поток обработки фреймов успешно запущен на :50052
+[pcef-core-engine] 2026/06/14 11:54:47.138580 [INFO] PCEF Core Gx -> Сессия Абонента [192.168.1.50] успешно взведена в Reactive LRU Cache по сигналу PCRF
+[pcef-core-engine] 2026/06/14 11:54:47.138580 [INFO] RPC SUCCESS [Method: /pb.DiameterGx/ProvisionPccRules] | Latency: 0s | Code: OK
+[pcef-core-engine] 2026/06/14 11:54:47.139646 [INFO] PCEF Core Gx -> Сессия Абонента [192.168.1.51] успешно взведена в Reactive LRU Cache по сигналу PCRF
+[pcef-core-engine] 2026/06/14 11:54:47.139646 [INFO] RPC SUCCESS [Method: /pb.DiameterGx/ProvisionPccRules] | Latency: 0s | Code: OK
+[pcef-core-engine] 2026/06/14 11:55:15.141837 [ERROR] Ошибка конвейера диспетчеризации PCEF: architecture violation: unhandled composite bitmask condition [0xB]
+[pcef-core-engine] 2026/06/14 11:55:18.931368 [INFO] Получен системный сигнал ядра Linux [interrupt]. Инициирован Graceful Shutdown...
+[pcef-core-engine] 2026/06/14 11:55:20.688668 [INFO] Все сетевые сокеты и gRPC соединения успешно закрыты. Сервер остановлен штатно.
+[pcef-core-engine] 2026/06/14 11:56:08.411955 [INFO] Запуск Исполнительного Ядра Трафика PCEF Core (User Plane Go Engine)...
+[pcef-core-engine] 2026/06/14 11:56:08.414063 [INFO] Observability Core -> HTTP-порт сбора OpenTelemetry/Prometheus метрик успешно запущен на :8080/metrics
+[pcef-core-engine] 2026/06/14 11:56:08.416251 [INFO] gRPC PCEF-Core поток обработки фреймов успешно запущен на :50052
+[pcef-core-engine] 2026/06/14 11:56:11.490129 [INFO] PCEF Core Gx -> Сессия Абонента [192.168.1.50] успешно взведена в Reactive LRU Cache по сигналу PCRF
+[pcef-core-engine] 2026/06/14 11:56:11.490129 [INFO] RPC SUCCESS [Method: /pb.DiameterGx/ProvisionPccRules] | Latency: 0s | Code: OK
+[pcef-core-engine] 2026/06/14 11:56:11.490691 [INFO] PCEF Core Gx -> Сессия Абонента [192.168.1.51] успешно взведена в Reactive LRU Cache по сигналу PCRF
+[pcef-core-engine] 2026/06/14 11:56:11.490691 [INFO] RPC SUCCESS [Method: /pb.DiameterGx/ProvisionPccRules] | Latency: 0s | Code: OK
+[pcef-core-engine] 2026/06/14 11:56:35.375318 [ERROR] Ошибка конвейера диспетчеризации PCEF: architecture violation: unhandled composite bitmask condition [0xB]
+[pcef-core-engine] 2026/06/14 11:57:18.472923 [INFO] Получен системный сигнал ядра Linux [interrupt]. Инициирован Graceful Shutdown...
+[pcef-core-engine] 2026/06/14 11:57:20.227425 [INFO] Все сетевые сокеты и gRPC соединения успешно закрыты. Сервер остановлен штатно.

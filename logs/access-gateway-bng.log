@@ -1,0 +1,16 @@
+[access-gateway-bng] 2026/06/14 11:54:44.085833 [INFO] Запуск Сетевого Шлюза Доступа Access Gateway...
+[access-gateway-bng] 2026/06/14 11:54:47.137975 [INFO] RADIUS UDP Сигнальный порт успешно запущен на :1813
+[access-gateway-bng] 2026/06/14 11:54:47.137975 [INFO] RADIUS UDP -> Перехвачен фрейм Accounting-Start [IMSI: 250010000000001, IP: 192.168.1.50]
+[access-gateway-bng] 2026/06/14 11:54:47.139109 [INFO] Gx Interface SUCCESS -> Сессия IMSI [250010000000001] успешно авторизована в Control Plane сети
+[access-gateway-bng] 2026/06/14 11:54:47.139109 [INFO] RADIUS UDP -> Перехвачен фрейм Accounting-Start [IMSI: 250010000000002, IP: 192.168.1.51]
+[access-gateway-bng] 2026/06/14 11:54:47.139646 [INFO] Gx Interface SUCCESS -> Сессия IMSI [250010000000002] успешно авторизована в Control Plane сети
+[access-gateway-bng] 2026/06/14 11:55:18.932064 [INFO] Получен системный сигнал ядра Linux [interrupt]. Инициирован Graceful Shutdown...
+[access-gateway-bng] 2026/06/14 11:55:18.933575 [INFO] Все сетевые сокеты и gRPC соединения успешно закрыты. Сервер остановлен штатно.
+[access-gateway-bng] 2026/06/14 11:56:08.488646 [INFO] Запуск Сетевого Шлюза Доступа Access Gateway...
+[access-gateway-bng] 2026/06/14 11:56:11.489613 [INFO] RADIUS UDP Сигнальный порт успешно запущен на :1813
+[access-gateway-bng] 2026/06/14 11:56:11.489613 [INFO] RADIUS UDP -> Перехвачен фрейм Accounting-Start [IMSI: 250010000000001, IP: 192.168.1.50]
+[access-gateway-bng] 2026/06/14 11:56:11.490691 [INFO] Gx Interface SUCCESS -> Сессия IMSI [250010000000001] успешно авторизована в Control Plane сети
+[access-gateway-bng] 2026/06/14 11:56:11.490691 [INFO] RADIUS UDP -> Перехвачен фрейм Accounting-Start [IMSI: 250010000000002, IP: 192.168.1.51]
+[access-gateway-bng] 2026/06/14 11:56:11.491214 [INFO] Gx Interface SUCCESS -> Сессия IMSI [250010000000002] успешно авторизована в Control Plane сети
+[access-gateway-bng] 2026/06/14 11:57:18.472923 [INFO] Получен системный сигнал ядра Linux [interrupt]. Инициирован Graceful Shutdown...
+[access-gateway-bng] 2026/06/14 11:57:18.478739 [INFO] Все сетевые сокеты и gRPC соединения успешно закрыты. Сервер остановлен штатно.
