@@ -56,12 +56,15 @@ run-local: stop-local
 	@echo "🔥 [START] Спусковой крючок: Включение нагрузочного ue-emulator смартфона..."
 	@go run services/ue-emulator/cmd/main.go
 
-# БЫЛО: @pkill -f "services/" || true
-# СТАЛО (Ищем строго по подстроке /main.go, что гарантирует безопасность самого make):
-# FIXED: Narrowing down pkill bounds to /main.go patterns to avoid self-killing the root make engine process space
 stop-local:
 	@echo "🛑 Остановка всех фоновых Go-сервисов и очистка сетевых сокетов..."
-	@pkill -f "/main.go" || true
+	@if command -v fuser >/dev/null 2>&1; then \
+		fuser -k -n tcp 50052 50054 9042 9092 8123 50053 50056 >/dev/null 2>&1 || true; \
+	elif command -v lsof >/dev/null 2>&1; then \
+		lsof -ti :50052,:50054,:9042,:9092,:8123,:50053,:50056 | xargs kill -9 >/dev/null 2>&1 || true; \
+	else \
+		pkill -f "go run services/" || true; \
+	fi
 	@echo "✅ Все локальные процессы успешно зачищены."
 
 help:

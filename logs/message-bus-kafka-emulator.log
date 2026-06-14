@@ -209,3 +209,84 @@
 [message-bus-kafka-emulator] 2026/06/14 19:37:28.317622 [INFO] RPC SUCCESS [Method: /pb.DiameterGz/StreamCdrLogs] | Latency: 0s | Code: OK
 [message-bus-kafka-emulator] 2026/06/14 19:37:29.240231 [INFO] Получен системный сигнал ядра Linux [interrupt]. Инициирован Graceful Shutdown...
 [message-bus-kafka-emulator] 2026/06/14 19:37:29.242403 [INFO] Все сетевые сокеты и gRPC соединения успешно закрыты. Сервер остановлен штатно.
+[message-bus-kafka-emulator] 2026/06/14 19:53:44.689430 [INFO] Инициализация шины данных оффлайн-логов Message Bus (Apache Kafka Go Emulator)...
+[message-bus-kafka-emulator] 2026/06/14 19:53:44.701892 [INFO] gRPC Kafka-Шина данных успешно запущена на :9092
+[message-bus-kafka-emulator] 2026/06/14 19:53:46.152521 [INFO] Получен системный сигнал ядра Linux [interrupt]. Инициирован Graceful Shutdown...
+[message-bus-kafka-emulator] 2026/06/14 19:53:46.153567 [INFO] Все сетевые сокеты и gRPC соединения успешно закрыты. Сервер остановлен штатно.
+[message-bus-kafka-emulator] 2026/06/14 19:56:03.207994 [INFO] Инициализация шины данных оффлайн-логов Message Bus (Apache Kafka Go Emulator)...
+[message-bus-kafka-emulator] 2026/06/14 19:56:03.213634 [INFO] gRPC Kafka-Шина данных успешно запущена на :9092
+[message-bus-kafka-emulator] 2026/06/14 19:56:09.189496 [INFO] RPC SUCCESS [Method: /pb.DiameterGz/StreamCdrLogs] | Latency: 2.488µs | Code: OK
+[message-bus-kafka-emulator] 2026/06/14 19:56:09.193005 [INFO] RPC SUCCESS [Method: /pb.DiameterGz/StreamCdrLogs] | Latency: 2.105µs | Code: OK
+[message-bus-kafka-emulator] 2026/06/14 19:56:10.518248 [INFO] RPC SUCCESS [Method: /pb.DiameterGz/StreamCdrLogs] | Latency: 2µs | Code: OK
+[message-bus-kafka-emulator] 2026/06/14 19:56:10.704476 [INFO] RPC SUCCESS [Method: /pb.DiameterGz/StreamCdrLogs] | Latency: 2µs | Code: OK
+[message-bus-kafka-emulator] 2026/06/14 19:56:11.639121 [INFO] RPC SUCCESS [Method: /pb.DiameterGz/StreamCdrLogs] | Latency: 1.9µs | Code: OK
+[message-bus-kafka-emulator] 2026/06/14 19:56:12.457528 [INFO] RPC SUCCESS [Method: /pb.DiameterGz/StreamCdrLogs] | Latency: 2µs | Code: OK
+[message-bus-kafka-emulator] 2026/06/14 19:56:13.612104 [INFO] RPC SUCCESS [Method: /pb.DiameterGz/StreamCdrLogs] | Latency: 1.9µs | Code: OK
+[message-bus-kafka-emulator] 2026/06/14 19:56:14.383320 [INFO] RPC SUCCESS [Method: /pb.DiameterGz/StreamCdrLogs] | Latency: 1.9µs | Code: OK
+[message-bus-kafka-emulator] 2026/06/14 19:56:15.149829 [INFO] Получен системный сигнал ядра Linux [interrupt]. Инициирован Graceful Shutdown...
+[message-bus-kafka-emulator] 2026/06/14 19:56:15.152278 [INFO] Все сетевые сокеты и gRPC соединения успешно закрыты. Сервер остановлен штатно.
+[message-bus-kafka-emulator] 2026/06/14 20:04:21.761778 [INFO] Инициализация шины данных оффлайн-логов Message Bus (Apache Kafka Go Emulator)...
+[message-bus-kafka-emulator] 2026/06/14 20:04:21.764455 [INFO] gRPC Kafka-Шина данных успешно запущена на :9092
+[message-bus-kafka-emulator] 2026/06/14 20:04:26.527576 [INFO] Получен системный сигнал ядра Linux [interrupt]. Инициирован Graceful Shutdown...
+[message-bus-kafka-emulator] 2026/06/14 20:04:26.530597 [INFO] Все сетевые сокеты и gRPC соединения успешно закрыты. Сервер остановлен штатно.
+[message-bus-kafka-emulator] 2026/06/14 20:04:55.013911 [INFO] Инициализация шины данных оффлайн-логов Message Bus (Apache Kafka Go Emulator)...
+[message-bus-kafka-emulator] 2026/06/14 20:04:55.016653 [INFO] gRPC Kafka-Шина данных успешно запущена на :9092
+[message-bus-kafka-emulator] 2026/06/14 20:04:56.357796 [INFO] Получен системный сигнал ядра Linux [interrupt]. Инициирован Graceful Shutdown...
+[message-bus-kafka-emulator] 2026/06/14 20:04:56.358319 [INFO] Все сетевые сокеты и gRPC соединения успешно закрыты. Сервер остановлен штатно.
+[message-bus-kafka-emulator] 2026/06/14 20:10:19.503182 [INFO] Инициализация шины данных оффлайн-логов Message Bus (Apache Kafka Go Emulator)...
+[message-bus-kafka-emulator] 2026/06/14 20:10:19.517739 [INFO] gRPC Kafka-Шина данных успешно запущена на :9092
+[message-bus-kafka-emulator] 2026/06/14 20:10:25.313722 [INFO] RPC SUCCESS [Method: /pb.DiameterGz/StreamCdrLogs] | Latency: 3.6µs | Code: OK
+[message-bus-kafka-emulator] 2026/06/14 20:10:25.315692 [INFO] RPC SUCCESS [Method: /pb.DiameterGz/StreamCdrLogs] | Latency: 1.6µs | Code: OK
+[message-bus-kafka-emulator] 2026/06/14 20:10:26.481390 [INFO] RPC SUCCESS [Method: /pb.DiameterGz/StreamCdrLogs] | Latency: 1.462µs | Code: OK
+[message-bus-kafka-emulator] 2026/06/14 20:10:26.662671 [INFO] RPC SUCCESS [Method: /pb.DiameterGz/StreamCdrLogs] | Latency: 1.364µs | Code: OK
+[message-bus-kafka-emulator] 2026/06/14 20:10:27.870389 [INFO] RPC SUCCESS [Method: /pb.DiameterGz/StreamCdrLogs] | Latency: 1.753µs | Code: OK
+[message-bus-kafka-emulator] 2026/06/14 20:10:28.207578 [INFO] RPC SUCCESS [Method: /pb.DiameterGz/StreamCdrLogs] | Latency: 1.462µs | Code: OK
+[message-bus-kafka-emulator] 2026/06/14 20:10:29.860203 [INFO] RPC SUCCESS [Method: /pb.DiameterGz/StreamCdrLogs] | Latency: 1.461µs | Code: OK
+[message-bus-kafka-emulator] 2026/06/14 20:10:30.286531 [INFO] RPC SUCCESS [Method: /pb.DiameterGz/StreamCdrLogs] | Latency: 1.656µs | Code: OK
+[message-bus-kafka-emulator] 2026/06/14 20:10:30.858018 [INFO] Получен системный сигнал ядра Linux [interrupt]. Инициирован Graceful Shutdown...
+[message-bus-kafka-emulator] 2026/06/14 20:10:30.862069 [INFO] Все сетевые сокеты и gRPC соединения успешно закрыты. Сервер остановлен штатно.
+[message-bus-kafka-emulator] 2026/06/14 20:10:48.259408 [INFO] Инициализация шины данных оффлайн-логов Message Bus (Apache Kafka Go Emulator)...
+[message-bus-kafka-emulator] 2026/06/14 20:10:48.268108 [INFO] gRPC Kafka-Шина данных успешно запущена на :9092
+[message-bus-kafka-emulator] 2026/06/14 20:10:54.185496 [INFO] RPC SUCCESS [Method: /pb.DiameterGz/StreamCdrLogs] | Latency: 102.484µs | Code: OK
+[message-bus-kafka-emulator] 2026/06/14 20:10:54.185662 [INFO] RPC SUCCESS [Method: /pb.DiameterGz/StreamCdrLogs] | Latency: 1.247µs | Code: OK
+[message-bus-kafka-emulator] 2026/06/14 20:10:55.279176 [INFO] RPC SUCCESS [Method: /pb.DiameterGz/StreamCdrLogs] | Latency: 1.8µs | Code: OK
+[message-bus-kafka-emulator] 2026/06/14 20:10:55.754512 [INFO] RPC SUCCESS [Method: /pb.DiameterGz/StreamCdrLogs] | Latency: 1.8µs | Code: OK
+[message-bus-kafka-emulator] 2026/06/14 20:10:56.780615 [INFO] RPC SUCCESS [Method: /pb.DiameterGz/StreamCdrLogs] | Latency: 1.8µs | Code: OK
+[message-bus-kafka-emulator] 2026/06/14 20:10:57.071116 [INFO] RPC SUCCESS [Method: /pb.DiameterGz/StreamCdrLogs] | Latency: 2µs | Code: OK
+[message-bus-kafka-emulator] 2026/06/14 20:10:58.011569 [INFO] Получен системный сигнал ядра Linux [interrupt]. Инициирован Graceful Shutdown...
+[message-bus-kafka-emulator] 2026/06/14 20:10:58.014705 [INFO] Все сетевые сокеты и gRPC соединения успешно закрыты. Сервер остановлен штатно.
+[message-bus-kafka-emulator] 2026/06/14 20:13:44.627691 [INFO] Инициализация шины данных оффлайн-логов Message Bus (Apache Kafka Go Emulator)...
+[message-bus-kafka-emulator] 2026/06/14 20:13:44.633554 [INFO] gRPC Kafka-Шина данных успешно запущена на :9092
+[message-bus-kafka-emulator] 2026/06/14 20:13:50.580691 [INFO] RPC SUCCESS [Method: /pb.DiameterGz/StreamCdrLogs] | Latency: 4.297µs | Code: OK
+[message-bus-kafka-emulator] 2026/06/14 20:13:50.597575 [INFO] RPC SUCCESS [Method: /pb.DiameterGz/StreamCdrLogs] | Latency: 2.247µs | Code: OK
+[message-bus-kafka-emulator] 2026/06/14 20:13:51.792648 [INFO] RPC SUCCESS [Method: /pb.DiameterGz/StreamCdrLogs] | Latency: 1.854µs | Code: OK
+[message-bus-kafka-emulator] 2026/06/14 20:13:52.280591 [INFO] RPC SUCCESS [Method: /pb.DiameterGz/StreamCdrLogs] | Latency: 2.048µs | Code: OK
+[message-bus-kafka-emulator] 2026/06/14 20:13:53.604450 [INFO] RPC SUCCESS [Method: /pb.DiameterGz/StreamCdrLogs] | Latency: 1.951µs | Code: OK
+[message-bus-kafka-emulator] 2026/06/14 20:13:53.627785 [INFO] RPC SUCCESS [Method: /pb.DiameterGz/StreamCdrLogs] | Latency: 1.854µs | Code: OK
+[message-bus-kafka-emulator] 2026/06/14 20:13:55.191473 [INFO] RPC SUCCESS [Method: /pb.DiameterGz/StreamCdrLogs] | Latency: 1.659µs | Code: OK
+[message-bus-kafka-emulator] 2026/06/14 20:13:55.359969 [INFO] RPC SUCCESS [Method: /pb.DiameterGz/StreamCdrLogs] | Latency: 1.951µs | Code: OK
+[message-bus-kafka-emulator] 2026/06/14 20:13:56.304228 [INFO] RPC SUCCESS [Method: /pb.DiameterGz/StreamCdrLogs] | Latency: 1.854µs | Code: OK
+[message-bus-kafka-emulator] 2026/06/14 20:13:56.797530 [INFO] RPC SUCCESS [Method: /pb.DiameterGz/StreamCdrLogs] | Latency: 1.951µs | Code: OK
+[message-bus-kafka-emulator] 2026/06/14 20:13:56.933698 [INFO] Получен системный сигнал ядра Linux [interrupt]. Инициирован Graceful Shutdown...
+[message-bus-kafka-emulator] 2026/06/14 20:13:56.938023 [INFO] Все сетевые сокеты и gRPC соединения успешно закрыты. Сервер остановлен штатно.
+[message-bus-kafka-emulator] 2026/06/14 20:14:00.467211 [INFO] Инициализация шины данных оффлайн-логов Message Bus (Apache Kafka Go Emulator)...
+[message-bus-kafka-emulator] 2026/06/14 20:14:00.475013 [INFO] gRPC Kafka-Шина данных успешно запущена на :9092
+[message-bus-kafka-emulator] 2026/06/14 20:14:07.123222 [INFO] RPC SUCCESS [Method: /pb.DiameterGz/StreamCdrLogs] | Latency: 3.711µs | Code: OK
+[message-bus-kafka-emulator] 2026/06/14 20:14:07.160184 [INFO] RPC SUCCESS [Method: /pb.DiameterGz/StreamCdrLogs] | Latency: 1.758µs | Code: OK
+[message-bus-kafka-emulator] 2026/06/14 20:14:08.162835 [INFO] RPC SUCCESS [Method: /pb.DiameterGz/StreamCdrLogs] | Latency: 1.759µs | Code: OK
+[message-bus-kafka-emulator] 2026/06/14 20:14:08.442216 [INFO] Получен системный сигнал ядра Linux [interrupt]. Инициирован Graceful Shutdown...
+[message-bus-kafka-emulator] 2026/06/14 20:14:08.444818 [INFO] Все сетевые сокеты и gRPC соединения успешно закрыты. Сервер остановлен штатно.
+[message-bus-kafka-emulator] 2026/06/14 20:14:21.269802 [INFO] Инициализация шины данных оффлайн-логов Message Bus (Apache Kafka Go Emulator)...
+[message-bus-kafka-emulator] 2026/06/14 20:14:21.276096 [INFO] gRPC Kafka-Шина данных успешно запущена на :9092
+[message-bus-kafka-emulator] 2026/06/14 20:14:27.260487 [INFO] RPC SUCCESS [Method: /pb.DiameterGz/StreamCdrLogs] | Latency: 3.997µs | Code: OK
+[message-bus-kafka-emulator] 2026/06/14 20:14:27.263254 [INFO] RPC SUCCESS [Method: /pb.DiameterGz/StreamCdrLogs] | Latency: 1.56µs | Code: OK
+[message-bus-kafka-emulator] 2026/06/14 20:14:28.962057 [INFO] RPC SUCCESS [Method: /pb.DiameterGz/StreamCdrLogs] | Latency: 1.657µs | Code: OK
+[message-bus-kafka-emulator] 2026/06/14 20:14:29.030509 [INFO] RPC SUCCESS [Method: /pb.DiameterGz/StreamCdrLogs] | Latency: 1.852µs | Code: OK
+[message-bus-kafka-emulator] 2026/06/14 20:14:30.550559 [INFO] RPC SUCCESS [Method: /pb.DiameterGz/StreamCdrLogs] | Latency: 1.658µs | Code: OK
+[message-bus-kafka-emulator] 2026/06/14 20:14:30.987277 [INFO] RPC SUCCESS [Method: /pb.DiameterGz/StreamCdrLogs] | Latency: 1.852µs | Code: OK
+[message-bus-kafka-emulator] 2026/06/14 20:14:31.036210 [INFO] Получен системный сигнал ядра Linux [interrupt]. Инициирован Graceful Shutdown...
+[message-bus-kafka-emulator] 2026/06/14 20:14:31.038995 [INFO] Все сетевые сокеты и gRPC соединения успешно закрыты. Сервер остановлен штатно.
+[message-bus-kafka-emulator] 2026/06/14 20:14:42.216411 [INFO] Инициализация шины данных оффлайн-логов Message Bus (Apache Kafka Go Emulator)...
+[message-bus-kafka-emulator] 2026/06/14 20:14:42.219669 [INFO] gRPC Kafka-Шина данных успешно запущена на :9092
+[message-bus-kafka-emulator] 2026/06/14 20:14:45.980296 [INFO] Получен системный сигнал ядра Linux [interrupt]. Инициирован Graceful Shutdown...
+[message-bus-kafka-emulator] 2026/06/14 20:14:45.980805 [INFO] Все сетевые сокеты и gRPC соединения успешно закрыты. Сервер остановлен штатно.

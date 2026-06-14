@@ -30,3 +30,57 @@
 [access-gateway-bng] 2026/06/14 19:37:17.412467 [INFO] Gx Interface SUCCESS -> Сессия IP [192.168.1.51] успешно авторизована в контуре ядра
 [access-gateway-bng] 2026/06/14 19:37:29.240904 [INFO] Получен системный сигнал ядра Linux [interrupt]. Инициирован Graceful Shutdown...
 [access-gateway-bng] 2026/06/14 19:37:29.240904 [INFO] Все сетевые сокеты и gRPC соединения успешно закрыты. Сервер остановлен штатно.
+[access-gateway-bng] 2026/06/14 19:54:53.039586 [INFO] Запуск Сетевого Шлюза Доступа Access Gateway...
+[access-gateway-bng] 2026/06/14 19:54:54.655435 [INFO] Получен системный сигнал ядра Linux [interrupt]. Инициирован Graceful Shutdown...
+[access-gateway-bng] 2026/06/14 19:54:54.656457 [INFO] Все сетевые сокеты и gRPC соединения успешно закрыты. Сервер остановлен штатно.
+[access-gateway-bng] 2026/06/14 19:56:07.163732 [INFO] Запуск Сетевого Шлюза Доступа Access Gateway...
+[access-gateway-bng] 2026/06/14 19:56:10.166131 [INFO] RADIUS UDP Сигнальный порт успешно запущен на :1813
+[access-gateway-bng] 2026/06/14 19:56:10.166709 [INFO] RADIUS UDP -> Перехвачен сигнальный фрейм Accounting-Start [IMSI: 250010000000001, IP: 192.168.1.50]
+[access-gateway-bng] 2026/06/14 19:56:10.170574 [INFO] Gx Interface SUCCESS -> Сессия IP [192.168.1.50] успешно авторизована в контуре ядра
+[access-gateway-bng] 2026/06/14 19:56:10.171201 [INFO] RADIUS UDP -> Перехвачен сигнальный фрейм Accounting-Start [IMSI: 250010000000002, IP: 192.168.1.51]
+[access-gateway-bng] 2026/06/14 19:56:10.173514 [INFO] Gx Interface SUCCESS -> Сессия IP [192.168.1.51] успешно авторизована в контуре ядра
+[access-gateway-bng] 2026/06/14 19:56:15.149678 [INFO] Получен системный сигнал ядра Linux [interrupt]. Инициирован Graceful Shutdown...
+[access-gateway-bng] 2026/06/14 19:56:15.152116 [INFO] Все сетевые сокеты и gRPC соединения успешно закрыты. Сервер остановлен штатно.
+[access-gateway-bng] 2026/06/14 20:04:25.870676 [INFO] Запуск Сетевого Шлюза Доступа Access Gateway...
+[access-gateway-bng] 2026/06/14 20:04:26.525212 [INFO] Получен системный сигнал ядра Linux [interrupt]. Инициирован Graceful Shutdown...
+[access-gateway-bng] 2026/06/14 20:04:26.526473 [INFO] Все сетевые сокеты и gRPC соединения успешно закрыты. Сервер остановлен штатно.
+[access-gateway-bng] 2026/06/14 20:10:23.269053 [INFO] Запуск Сетевого Шлюза Доступа Access Gateway...
+[access-gateway-bng] 2026/06/14 20:10:26.279188 [INFO] RADIUS UDP Сигнальный порт успешно запущен на :1813
+[access-gateway-bng] 2026/06/14 20:10:26.279641 [INFO] RADIUS UDP -> Перехвачен сигнальный фрейм Accounting-Start [IMSI: 250010000000001, IP: 192.168.1.50]
+[access-gateway-bng] 2026/06/14 20:10:26.284744 [INFO] Gx Interface SUCCESS -> Сессия IP [192.168.1.50] успешно авторизована в контуре ядра
+[access-gateway-bng] 2026/06/14 20:10:26.286155 [INFO] RADIUS UDP -> Перехвачен сигнальный фрейм Accounting-Start [IMSI: 250010000000002, IP: 192.168.1.51]
+[access-gateway-bng] 2026/06/14 20:10:26.310497 [INFO] Gx Interface SUCCESS -> Сессия IP [192.168.1.51] успешно авторизована в контуре ядра
+[access-gateway-bng] 2026/06/14 20:10:30.858265 [INFO] Получен системный сигнал ядра Linux [interrupt]. Инициирован Graceful Shutdown...
+[access-gateway-bng] 2026/06/14 20:10:30.860226 [INFO] Все сетевые сокеты и gRPC соединения успешно закрыты. Сервер остановлен штатно.
+[access-gateway-bng] 2026/06/14 20:10:52.184406 [INFO] Запуск Сетевого Шлюза Доступа Access Gateway...
+[access-gateway-bng] 2026/06/14 20:10:55.187936 [INFO] RADIUS UDP Сигнальный порт успешно запущен на :1813
+[access-gateway-bng] 2026/06/14 20:10:55.188486 [INFO] RADIUS UDP -> Перехвачен сигнальный фрейм Accounting-Start [IMSI: 250010000000001, IP: 192.168.1.50]
+[access-gateway-bng] 2026/06/14 20:10:55.193280 [INFO] Gx Interface SUCCESS -> Сессия IP [192.168.1.50] успешно авторизована в контуре ядра
+[access-gateway-bng] 2026/06/14 20:10:55.194198 [INFO] RADIUS UDP -> Перехвачен сигнальный фрейм Accounting-Start [IMSI: 250010000000002, IP: 192.168.1.51]
+[access-gateway-bng] 2026/06/14 20:10:55.196700 [INFO] Gx Interface SUCCESS -> Сессия IP [192.168.1.51] успешно авторизована в контуре ядра
+[access-gateway-bng] 2026/06/14 20:10:58.011286 [INFO] Получен системный сигнал ядра Linux [interrupt]. Инициирован Graceful Shutdown...
+[access-gateway-bng] 2026/06/14 20:10:58.013930 [INFO] Все сетевые сокеты и gRPC соединения успешно закрыты. Сервер остановлен штатно.
+[access-gateway-bng] 2026/06/14 20:13:48.540506 [INFO] Запуск Сетевого Шлюза Доступа Access Gateway...
+[access-gateway-bng] 2026/06/14 20:13:51.542979 [INFO] RADIUS UDP Сигнальный порт успешно запущен на :1813
+[access-gateway-bng] 2026/06/14 20:13:51.545178 [INFO] RADIUS UDP -> Перехвачен сигнальный фрейм Accounting-Start [IMSI: 250010000000001, IP: 192.168.1.50]
+[access-gateway-bng] 2026/06/14 20:13:51.550678 [INFO] Gx Interface SUCCESS -> Сессия IP [192.168.1.50] успешно авторизована в контуре ядра
+[access-gateway-bng] 2026/06/14 20:13:51.553570 [INFO] RADIUS UDP -> Перехвачен сигнальный фрейм Accounting-Start [IMSI: 250010000000002, IP: 192.168.1.51]
+[access-gateway-bng] 2026/06/14 20:13:51.558145 [INFO] Gx Interface SUCCESS -> Сессия IP [192.168.1.51] успешно авторизована в контуре ядра
+[access-gateway-bng] 2026/06/14 20:13:56.933840 [INFO] Получен системный сигнал ядра Linux [interrupt]. Инициирован Graceful Shutdown...
+[access-gateway-bng] 2026/06/14 20:13:56.936726 [INFO] Все сетевые сокеты и gRPC соединения успешно закрыты. Сервер остановлен штатно.
+[access-gateway-bng] 2026/06/14 20:14:05.144924 [INFO] Запуск Сетевого Шлюза Доступа Access Gateway...
+[access-gateway-bng] 2026/06/14 20:14:08.148809 [INFO] RADIUS UDP Сигнальный порт успешно запущен на :1813
+[access-gateway-bng] 2026/06/14 20:14:08.149292 [INFO] RADIUS UDP -> Перехвачен сигнальный фрейм Accounting-Start [IMSI: 250010000000001, IP: 192.168.1.50]
+[access-gateway-bng] 2026/06/14 20:14:08.162094 [INFO] Gx Interface SUCCESS -> Сессия IP [192.168.1.50] успешно авторизована в контуре ядра
+[access-gateway-bng] 2026/06/14 20:14:08.164098 [INFO] RADIUS UDP -> Перехвачен сигнальный фрейм Accounting-Start [IMSI: 250010000000002, IP: 192.168.1.51]
+[access-gateway-bng] 2026/06/14 20:14:08.168331 [INFO] Gx Interface SUCCESS -> Сессия IP [192.168.1.51] успешно авторизована в контуре ядра
+[access-gateway-bng] 2026/06/14 20:14:08.442153 [INFO] Получен системный сигнал ядра Linux [interrupt]. Инициирован Graceful Shutdown...
+[access-gateway-bng] 2026/06/14 20:14:08.444117 [INFO] Все сетевые сокеты и gRPC соединения успешно закрыты. Сервер остановлен штатно.
+[access-gateway-bng] 2026/06/14 20:14:25.207056 [INFO] Запуск Сетевого Шлюза Доступа Access Gateway...
+[access-gateway-bng] 2026/06/14 20:14:28.210588 [INFO] RADIUS UDP Сигнальный порт успешно запущен на :1813
+[access-gateway-bng] 2026/06/14 20:14:28.211589 [INFO] RADIUS UDP -> Перехвачен сигнальный фрейм Accounting-Start [IMSI: 250010000000001, IP: 192.168.1.50]
+[access-gateway-bng] 2026/06/14 20:14:28.224914 [INFO] Gx Interface SUCCESS -> Сессия IP [192.168.1.50] успешно авторизована в контуре ядра
+[access-gateway-bng] 2026/06/14 20:14:28.229809 [INFO] RADIUS UDP -> Перехвачен сигнальный фрейм Accounting-Start [IMSI: 250010000000002, IP: 192.168.1.51]
+[access-gateway-bng] 2026/06/14 20:14:28.270287 [INFO] Gx Interface SUCCESS -> Сессия IP [192.168.1.51] успешно авторизована в контуре ядра
+[access-gateway-bng] 2026/06/14 20:14:31.036221 [INFO] Получен системный сигнал ядра Linux [interrupt]. Инициирован Graceful Shutdown...
+[access-gateway-bng] 2026/06/14 20:14:31.037823 [INFO] Все сетевые сокеты и gRPC соединения успешно закрыты. Сервер остановлен штатно.
