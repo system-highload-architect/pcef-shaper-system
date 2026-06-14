@@ -20,9 +20,7 @@ func main() {
 	log := logger.NewAppLogger(cfg.ServiceName, cfg.LogLevel)
 	log.Info("Запуск Сетевого Шлюза Доступа Access Gateway...")
 
-	// Шлюз подключается к PCRF-engine по Gx интерфейсу (порт 50053)
-	// БЫЛО: pcrfConn, err := grpc.Dial(cfg.PcrfCoreAddr, ...)
-	// СТАЛО (Используем каноничное поле из структуры конфига шлюза):
+	// Шлюз подключается к PCRF-engine по Gx интерфейсу (порт 50052)
 	pcrfConn, err := grpc.Dial(cfg.PcefCoreAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatal("Не удалось подключиться к PCRF по адресу %s: %v", cfg.PcefCoreAddr, err)

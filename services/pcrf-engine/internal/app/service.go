@@ -25,8 +25,6 @@ func NewPcrfService(spr gen.SubscriptionRepositoryClient, pcef gen.DiameterGxCli
 	}
 }
 
-// ... (весь остальной метод CompileRules остается без изменений)
-
 func (s *PcrfService) CompileRules(ctx context.Context, imsi string, ipAddr string) (*domain.PolicyProfile, error) {
 	// 1. Извлекаем профиль из ScyllaDB (spr-storage)
 	profile, err := s.sprClient.FetchProfile(ctx, &gen.ProfileRequest{Imsi: imsi})

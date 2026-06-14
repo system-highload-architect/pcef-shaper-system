@@ -8,7 +8,7 @@
 
 ## ⚡ 1. Local Monolithic Launch / Локальный скоростной запуск (Для дебага и Code Review)
 
-[RU] Для проверки рантайма, Lock-Free CAS вычислений, каскадного LRU-кэша Давида и прохождения трафика без установки Kubernetes, все 10 узлов запускаются параллельно в виде фоновых процессов ОС внутри одного терминала одной командой `Makefile`.
+[RU] Для проверки рантайма, Lock-Free CAS вычислений, каскадного LRU-кэша и прохождения трафика без установки Kubernetes, все 10 узлов запускаются параллельно в виде фоновых процессов ОС внутри одного терминала одной командой `Makefile`.
 
 [EN] To verify hot-path execution, Lock-Free CAS mutations, David's cascade LRU eviction, and overall traffic streams without a Kubernetes overhead, all 10 nodes can be spawned concurrently as background OS processes within a single terminal using a unified `Makefile` command.
 

@@ -18,9 +18,3 @@
 *   ### [📱 User Equipment (UE)](./specification/ue-specification.md) — Высоконагруженный генератор трафика.
 
 ---
-
-## 📋 Technical Requirements Specification (SRS) / Технические требования ТЗ
-
-*   ### [🛡️ PCEF Core Requirements](./srs/pcef-core-srs.md) — Табличная диспетчеризация $O(1)$ и inline DPI классификатор.
-*   ### [⚡ Lock-Free Rate Limiter Requirements](./srs/ratelimit-srs.md) — Защита L7 от DDoS на CAS-циклах процессора.
-*   ### [📦 Reactive LRU Cache Requirements](./srs/lru-cache-srs.md) — Каскадное вытеснение и `runtime.GC()`.

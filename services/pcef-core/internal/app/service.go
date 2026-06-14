@@ -34,7 +34,7 @@ type PcefCoreService struct {
 	dispatchEngine *dispatch.TableDrivenEngine
 	dpiSignatures  map[string]uint64
 	ocsClient      gen.DiameterGyClient
-	kafkaClient    gen.DiameterGzClient // ДОБАВЛЕНО: Клиент к шине логов Gz (Kafka)
+	kafkaClient    gen.DiameterGzClient // Клиент к шине логов Gz (Kafka)
 }
 
 func NewPcefCoreService(ocsClient gen.DiameterGyClient, kafkaClient gen.DiameterGzClient) *PcefCoreService {

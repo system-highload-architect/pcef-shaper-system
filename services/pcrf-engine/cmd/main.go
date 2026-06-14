@@ -27,9 +27,10 @@ func main() {
 		log.Fatal("Не удалось подключиться к SPR по адресу %s: %v", cfg.SprAddr, err)
 	}
 	defer sprConn.Close()
-	// ИСПРАВЛЕНО: Объявляем sprClient корректно
+
 	sprClient := gen.NewSubscriptionRepositoryClient(sprConn)
 
+	// TODO
 	// 2. Подключаемся к исполнительному ядру pcef-core по Gx интерфейсу (порт 50052)
 	pcefConn, err := grpc.Dial("localhost:50052", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
