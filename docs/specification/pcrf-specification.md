@@ -1,8 +1,8 @@
-# ⚙️ Policy & Charging Rules Function (PCRF) Specification
+# ⚙️ Policy & Charging Rules Function (PCRF) — Architectural Specification
 
 ### 🔍 Внутреннее устройство и прием данных / Mechanics & Data Ingestion
-* **[RU]** PCRF — это «мозг» Control Plane. Он принимает сессионные данные от AF (по Rx) и от PCEF (по Gx). Главная задача — динамическая компиляция **PCC-правил (Policy and Charging Control Rules)** на основе тарифного плана и текущих сетевых политик.
-* **[EN]** PCRF is the brain of the Control Plane. It ingests session telemetry from the AF (via Rx) and the PCEF (via Gx). Its core task is the dynamic compilation of **PCC (Policy and Charging Control) Rules** based on the subscriber's tariff and live network conditions.
+* **[RU]** PCRF является главным «мозгом» плоскости управления (Control Plane). Он принимает транзакционные gRPC-вызовы двух типов: `SendAAQuery` от внешних контент-платформ по интерфейсу **Rx** и `ProvisionPccRules` от Сетевого Шлюза по интерфейсу **Gx** [🧠]. Его основная b2b-задача — динамическая компиляция PCC-правил (Policy and Charging Control Rules) на основе тарифного плана и live-состояния профиля абонента [🧠].
+* **[EN]** PCRF functions as the primary brain of the Control Plane layer. It ingests transactional gRPC invokes of two profiles: `SendAAQuery` from external content platforms via the **Rx** interface and `ProvisionPccRules` from the Access Gateway via the **Gx** interface. Its core business milestone is the dynamic compilation of PCC (Policy and Charging Control) rules based on active subscription limits.
 
 ---
 
@@ -11,19 +11,24 @@
 ```mermaid
 sequenceDiagram
     autonumber
-    participant PCEF as 🛡️ PCEF Core (User Plane)
+    participant GW as 🌐 Access Gateway (RADIUS)
     participant PCRF as ⚙️ PCRF Engine (Control Plane)
-    participant SPR as 🗄️ SPR / Subscriber DB
+    participant SPR as 🗄️ SPR Storage (ScyllaDB)
+    participant Core as 🛡️ PCEF Core (User Plane)
 
-    PCEF->>PCRF: Diameter Gx: Credit-Control-Request (CCR: INITIAL) [IMSI, IP]
-    PCRF->>SPR: Sp/Ud Request: Fetch Profile [Subscriber ID]
-    SPR-->>PCRF: Profile Data [Tariff: Gold, Active Limits]
-    Note over PCRF: Rete-Алгоритм: Сборка PCC-правил в RAM
-    PCRF->>PCEF: Diameter Gx: Credit-Control-Answer (CCA) [Charging-Rule-Name: YouTube_Unlim]
+    GW->>PCRF: gRPC Gx: ProvisionPccRules [IMSI, IP] (RADIUS Trigger)
+    PCRF->>SPR: gRPC Sp: FetchProfile [Subscriber ID / IMSI]
+    Note over SPR: Извлечение b2b-паспорта за <0.5ms<br/>LSM-Tree Row Cache lookup
+    SPR-->>PCRF: Profile Data [Tariff: VIP, Status: Active]
+    
+    Note over PCRF: In-Memory Rete Алгоритм:<br/>Мгновенный маппинг PCC-правил O(1)
+    
+    PCRF->>Core: gRPC Gx Push: ProvisionPccRules [IP, Rules: VIP_UNLIMITED]
+    Note over Core: Сессия абонента взведена в Reactive LRU кэше
+    Core-->>PCRF: Push Ack [Result-Code: 2001 SUCCESS]
+    PCRF-->>GW: Gx Ack [Enforced: true]
 ```
 
----
-
-### 🛠️ Выигрыш и обоснование технологий / Technology Justification & Benefits
-* **[RU]** **Технология: Rete Algorithm / Движок правил в RAM на Go.** Выигрыш: вместо тяжелых дисковых вычислений правила компилируются в памяти с использованием битовых масок и Lock-Free стейт-машин. Это позволяет менять политику шейпинга абонента на лету за наносекунды при наступлении триггеров (например, наступил час пик — срезаем скорость торрентов).
-* **[EN]** **Technology: Rete Algorithm / Memory-resident rule engine in Go.** Benefits: instead of heavy disk-bound computations, rules are compiled in RAM utilizing bitmasks and Lock-Free state machines. This enables changing a subscriber's shaping policy on the fly within nanoseconds upon triggers (e.g., rush hour -> throttle torrents).
+### 🛠️ Выигрыш и Обоснование технологий / Technology Justification & Benefits
+* **[RU]** **Технология: Изолированный Go-модуль (`go.work`) + Table-Driven Policy Mapping.** Выигрыш: Достигается абсолютное разделение ответственности (*Separation of Concerns*) между плоскостью управления и плоскостью пользователя [🧠]. Вместо тяжелых дисковых вычислений или каскадов `if-else`, PCRF прогоняет флаги профиля, полученные из ScyllaDB по протоколу **Diameter Sp**, через внутренний **In-Memory реестр сопоставления правил**. Профиль абонента на лету конвертируется в массив бинарных PCC-правил за время $O(1)$ и по протоколу **Diameter Gx (3GPP TS 29.212)** спускается прямо в оперативную память ядра `pcef-core`, полностью освобождаяUser Plane от накладных расходов бизнес-логики маркетинга [🧠].
+* **[EN]** **Technology: Isolated Go Module (`go.work`) + Table-Driven Policy Mapping.** Benefits: Achieves strict, absolute *Separation of Concerns* boundaries between the Control Plane and User Plane layers. Instead of expensive disk-bound evaluations or nested conditional blocks, PCRF evaluates subscription flags retrieved from ScyllaDB via the **Diameter Sp** protocol against its local **In-Memory Policy Mapping Matrix**. The subscriber contract passport is instantly converted into an array of PCC rules within $O(1)$ complexity and pushed via the **Diameter Gx (3GPP TS 29.212)** protocol straight to the runtime memory of the `pcef-core`, completely offloading business-logic execution from the hot data plane path.
