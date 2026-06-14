@@ -1,6 +1,6 @@
 # 🏛️ 3GPP Policy & Charging Enforcement Function (PCEF) Shaper System
 
-[RU] Данный модуль представляет собой высокопроизводительный, коммерческий User Plane движок PCEF (функция применения политик и тарификации) с интегрированным DPI (Deep Packet Inspection) и QoS-шейпером трафика. Архитектура спроектирована по стандартам 3GPP PCC (Policy and Charging Control) для телеком- и финтех-экосистем.
+[RU] Данный модуль представляет собой высокопроизводительный, коммерческий User Plane движок PCEF (Функция применения политик и тарификации) с интегрированным DPI (Deep Packet Inspection) и QoS-шейпером трафика. Архитектура спроектирована по стандартам 3GPP PCC (Policy and Charging Control) для телеком- и финтех-экосистем.
 
 [EN] This module implements a high-performance, production-ready User Plane PCEF (Policy & Charging Enforcement Function) engine featuring an integrated DPI (Deep Packet Inspection) classifier and QoS traffic shaper. Designed strictly according to 3GPP PCC (Policy and Charging Control) standards for telecom and fintech ecosystems.
 
@@ -30,7 +30,7 @@ graph TD
     end
 
     %% 3. Уровень Управляющей Логики / Control Plane Layer
-    PCRF[⚙️ PCRF / Функция управления политиками]:::control
+    PCRF[⚙️ PCRF / Функция управления политикам]:::control
     AF[🚀 Application Function / AF]:::control
 
     %% 4. Внешние Enterprise b2b Сервисы и СУБД / External b2b Services & Storage
@@ -64,7 +64,7 @@ graph TD
 
 ---
 
-## 📋 Technical Requirements Specification (SRS) / Общее техническое ТЗ проекта
+## 📋 Technical Requirements Specification (SRS) / Техническое ТЗ проекта
 
 [RU] Нашей b2b-задачей является реализация легковесного, отказоустойчивого эмулятора **User Plane PCEF** на чистом Go, абстрагированного от тяжелого Diameter-сериализатора, но на 100% повторяющего физику обработки L4-L7 фреймов под Highload-нагрузкой.
 
@@ -82,17 +82,18 @@ graph TD
 * **[RU]** Применение политик ограничения скорости должно работать в реальном времени без глобальных блокировок рантайма Go. Мы применим усовершенствованный алгоритм **Leaky Bucket (Протекающее ведро)** для сглаживания всплесков трафика. Скорость пропускания байт (`Bandwidth Limit`) жестко регулируется PCC-правилами, полученными от эмулятора PCRF.
 * **[EN]** Bandwidth throttling and traffic shaping must operate in real time without triggering global Go runtime deadlocks. We will deploy an optimized **Leaky Bucket** algorithm to smooth out network traffic spikes. The maximum byte throughput rate (`Bandwidth Limit`) is strictly enforced by PCC rules received from the PCRF emulator.
 
-### 4. Highload Thread Isolation / Потокобезопасность ядра (Req. 4)
-* **[RU]** Обработка пакетов должна выполняться параллельными горутинами, утилизирующими все ядра CPU. Мапа сессий абонентов обязана исключать *Mutex Contention*. Мы применим паттерн **Map Sharding (Шардирование мап)** для снижения конкуренции за замки памяти под нагрузкой в сотни тысяч RPS.
-* **[EN]** Packet processing must be driven by parallel goroutines utilizing all available CPU cores. The subscriber session map must eliminate *Mutex Contention*. We will deploy the **Map Sharding** pattern to reduce memory lock contention under loads exceeding hundreds of thousands of RPS.
+### 4. Highload Thread Isolation & Reactive Cascade Eviction / Потокобезопасность и каскадное сжатие (Req. 4)
+* **[RU]** Обработка пакетов выполняется параллельными горутинами, утилизирующими все ядра CPU. Мапа сессий абонентов разбивается на 32 независимых сегмента (Map Sharding) для полной ликвидации *Mutex Contention*. Внутри каждого шарда управление памятью переведено на кастомный **Reactive LRU Cache**. Механизм полностью отказывается от фоновых сканирующих горутин: очистка «протухших» сессий происходит лениво на горячем пути за время $O(1)$. При превышении жесткого лимита памяти запускается **Каскадное сжатие хвоста (Tail-to-Head Cascade Eviction)**, последовательно вычищающее неактивных абонентов до установленной границы с принудительным ручным вызовом `runtime.GC()` для мгновенного возврата страниц RAM операционной системе.
+* **[EN]** Packet processing is driven by parallel goroutines utilizing all available CPU cores. The subscriber session map is split into 32 autonomous shards (Map Sharding) to entirely eliminate *Mutex Contention*. Memory management inside each shard is governed by a custom **Reactive LRU Cache**. It completely eliminates background scanning threads: eviction of expired sessions occurs lazily on the hot execution path within constant $O(1)$ time complexity. When hard memory limits overflow, it triggers a **Tail-to-Head Cascade Eviction**, cleaning up inactive entries bottom-up towards the defined target budget boundary, followed by an explicit `runtime.GC()` invocation to instantly release RAM pages to the OS host.
 
 ### 5. Table-Driven Policy Dispatching / Табличная диспетчеризация политик (Req. 5)
-* **[RU]** Для исключения деградации процессора на предсказании ветвлений (*Branch Misprediction*) при разрастании бизнес-логики до десятков тысяч условий, в ядро PCEF внедрен паттерн **Table-Driven Dispatch**. Каскады `if-else` и `switch` заменены на высокопроизводительный хэшированный реестр функций `map[string]PolicyAction`. Вычисление и применение PCC-правил происходит за константное время $O(1)$ через прямые вызовы кэшированных указателей функций в памяти RAM.
-* **[EN]** To prevent CPU branch misprediction degradation as business logic scales to tens of thousands of conditions, the PCEF core deploys the **Table-Driven Dispatch** pattern. Nested `if-else` and `switch` cascades are replaced with a high-performance hashed function registry `map[string]PolicyAction`. Evaluation and enforcement of PCC rules take place within constant $O(1)$ time via direct execution of cached memory function pointers.
+* **[RU]** Для исключения деградации процессора на предсказании ветвлений (*Branch Misprediction*) при разрастании бизнес-логики до десятков тысяч условий, в ядро PCEF внедрен паттерн **Table-Driven Dispatch**. Каскады `if-else` и `switch` заменены на высокопроизводительный хэшированный реестр функций `map[uint64]PolicyAction`. Вычисление и применение PCC-правил происходит за константное время $O(1)$ через прямые вызовы кэшированных указателей функций в памяти RAM.
+* **[EN]** To prevent CPU branch misprediction degradation as business logic scales to tens of thousands of conditions, the PCEF core deploys the **Table-Driven Dispatch** pattern. Nested `if-else` and `switch` cascades are replaced with a high-performance hashed function registry `map[uint64]PolicyAction`. Evaluation and enforcement of PCC rules take place within constant $O(1)$ time via direct execution of cached memory function pointers.
 
 ### 6. Hybrid Composite Key & Bitmask Matching / Композитная маршрутизация и битовые маски (Req. 6)
-* **[RU]** Для обработки сложных составных условий (сочетание логических И/ИЛИ, равенств и интервалов вида `a < b && c != nil`) ядро PCEF полностью отказывается от вложенных Call Stack вызовов. Реализован двухэтапный конвейер: интервальные диапазоны вычисляются через плоский бинарный поиск $O(\log N)$, после чего стейт нормализуется и упаковывается в монолитный **Композитный ключ (Composite Dispatch Key)** или битовую маску (`uint64 Bitmask`). Итоговый выбор бизнес-логики сводится к единственной атомарной инструкции косвенного перехода в хэш-таблице функций, обеспечивая абсолютную чистоту архитектуры и нулевой уровень Mutex Contention.
-* **[EN]** To process complex composite predicates (combinations of logical AND/OR, equalities, and range intervals like `a < b && c != nil`), the PCEF core completely eradicates nested Call Stack executions. A two-stage architecture pipeline is deployed: range intervals are evaluated via flat binary search $O(\log N)$, after which the active state is normalized and packed into a unified **Composite Dispatch Key** or a binary bitmask (`uint64 Bitmask`). The final business logic routing matches a single atomic indirect branch instruction within the function registry map, guaranteeing pure code architecture isolation and zero Mutex Contention.
+* **[RU]** Для обработки сложных составных условий (сочетание логических И/ИЛИ, равенств и интервалов вида `a < b && c != nil`) ядро PCEF полностью отказывается от вложенных Call Stack вызовов. Вычисления перенесены в общий платформенный пакет `internal/pkg/dispatch`. Интервальные диапазоны вычисляются через плоский бинарный поиск $O(\log N)$, после чего стейт нормализуется и упаковывается в монолитную **Битовою маску (`uint64 Bitmask`)**. Итоговый выбор бизнес-логики сводится к единственной атомарной инструкции косвенного перехода в хэш-таблице функций.
+* **[EN]** To process complex composite predicates (combinations of logical AND/OR, equalities, and range intervals like `a < b && c != nil`), the PCEF core completely eradicates nested Call Stack executions. Computations are offloaded to a shared platform layer `internal/pkg/dispatch`. Range intervals are evaluated via flat binary search $O(\log N)$, after which the active state is normalized and packed into a binary bitmask (`uint64 Bitmask`). The final routing matches a single atomic indirect branch instruction within the function registry map.
+
 
 ---
 
