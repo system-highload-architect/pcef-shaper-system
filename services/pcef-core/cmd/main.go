@@ -8,6 +8,7 @@ import (
 	"pcef-shaper-system/internal/pkg/interceptors"
 	"pcef-shaper-system/internal/pkg/logger"
 	"pcef-shaper-system/internal/pkg/shutdown"
+	"pcef-shaper-system/internal/pkg/telemetry"
 	gen "pcef-shaper-system/pb/gen"
 	"pcef-shaper-system/services/pcef-core/internal/app"
 	"pcef-shaper-system/services/pcef-core/internal/config"
@@ -46,7 +47,13 @@ func main() {
 	coreEngine.RegisterSubscriber(context.Background(), "250010000000001", "192.168.1.50", "VIP")
 	coreEngine.RegisterSubscriber(context.Background(), "250010000000002", "192.168.1.51", "BASE")
 
-	grpcHandler := transport.NewGrpcHandler(coreEngine, log)
+	// Внутри main.go ядра pcef-core:
+	metrics, err := telemetry.InitOtelMetrics(cfg.ServiceName, ":8080", log)
+	if err != nil {
+		log.Fatal("Не удалось запустить слой телеметрии OpenTelemetry: %v", err)
+	}
+
+	grpcHandler := transport.NewGrpcHandler(coreEngine, log, metrics)
 
 	server := grpc.NewServer(
 		grpc.UnaryInterceptor(interceptors.UnaryServerInterceptor(log)),

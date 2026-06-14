@@ -6,6 +6,7 @@ import (
 
 	"pcef-shaper-system/internal/pkg/logger"
 	"pcef-shaper-system/internal/pkg/ratelimit" // ИМПОРТИРУЕМ LOCK-FREE ЛИМИТЕР
+	"pcef-shaper-system/internal/pkg/telemetry"
 	gen "pcef-shaper-system/pb/gen"
 	"pcef-shaper-system/services/pcef-core/internal/app"
 
@@ -21,14 +22,16 @@ type GrpcHandler struct {
 	service app.ShaperEngine
 	log     *logger.AppLogger
 	limiter *ratelimit.TokenBucketLimiter
+	metrics *telemetry.OtelMetrics
 }
 
-func NewGrpcHandler(service app.ShaperEngine, log *logger.AppLogger) *GrpcHandler {
+func NewGrpcHandler(service app.ShaperEngine, log *logger.AppLogger, metrics *telemetry.OtelMetrics) *GrpcHandler {
 	return &GrpcHandler{
 		service: service,
 		log:     log,
 		// Инициализируем лимитер: скорость 50 запросов в сек, максимальный всплеск — 100 токенов
 		limiter: ratelimit.NewTokenBucketLimiter(50.0, 100.0),
+		metrics: metrics,
 	}
 }
 
@@ -56,6 +59,7 @@ func (h *GrpcHandler) ProcessTrafficStream(stream gen.TrafficPipeline_ProcessTra
 					SourceIp: frame.SourceIp,
 					Action:   "XDP_DROP", // Жесткая отсечка
 				})
+				h.metrics.BlockedPackets.Add(ctx, 1)
 				continue
 			}
 
@@ -68,6 +72,9 @@ func (h *GrpcHandler) ProcessTrafficStream(stream gen.TrafficPipeline_ProcessTra
 			if err := stream.Send(verdict); err != nil {
 				return status.Errorf(codes.Unavailable, "Failed to send enforcement verdict: %v", err)
 			}
+
+			// Атомарно инкрементируем объем пропущенных байт по ТЗ
+			h.metrics.ProcessedBytes.Add(ctx, frame.PayloadSizeBytes)
 		}
 	}
 }
