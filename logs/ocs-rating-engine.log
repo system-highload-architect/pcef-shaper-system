@@ -43,3 +43,16 @@
 [ocs-rating-engine] 2026/06/13 20:19:26.828997 [INFO] RPC SUCCESS [Method: /pb.DiameterGy/RequestCreditControl] | Latency: 0s | Code: OK
 [ocs-rating-engine] 2026/06/13 22:12:26.866993 [INFO] Получен системный сигнал ядра Linux [interrupt]. Инициирован Graceful Shutdown...
 [ocs-rating-engine] 2026/06/13 22:12:26.867500 [INFO] Все сетевые сокеты и gRPC соединения успешно закрыты. Сервер остановлен штатно.
+[ocs-rating-engine] 2026/06/14 11:00:33.890210 [INFO] Инициализация финтех-ядра онлайн-биллинга OCS (Aerospike HMA Emulator)...
+[ocs-rating-engine] 2026/06/14 11:00:33.896726 [INFO] gRPC OCS-Биллинг сервер успешно запущен на :50054
+[ocs-rating-engine] 2026/06/14 11:00:58.614125 [INFO] RPC SUCCESS [Method: /pb.DiameterGy/RequestCreditControl] | Latency: 0s | Code: OK
+[ocs-rating-engine] 2026/06/14 11:00:58.614125 [INFO] RPC SUCCESS [Method: /pb.DiameterGy/RequestCreditControl] | Latency: 0s | Code: OK
+[ocs-rating-engine] 2026/06/14 11:01:00.060973 [INFO] RPC SUCCESS [Method: /pb.DiameterGy/RequestCreditControl] | Latency: 0s | Code: OK
+[ocs-rating-engine] 2026/06/14 11:01:00.366714 [INFO] RPC SUCCESS [Method: /pb.DiameterGy/RequestCreditControl] | Latency: 0s | Code: OK
+[ocs-rating-engine] 2026/06/14 11:01:01.628740 [INFO] RPC SUCCESS [Method: /pb.DiameterGy/RequestCreditControl] | Latency: 0s | Code: OK
+[ocs-rating-engine] 2026/06/14 11:01:02.128468 [INFO] RPC SUCCESS [Method: /pb.DiameterGy/RequestCreditControl] | Latency: 528.5µs | Code: OK
+[ocs-rating-engine] 2026/06/14 11:01:03.412293 [INFO] RPC SUCCESS [Method: /pb.DiameterGy/RequestCreditControl] | Latency: 0s | Code: OK
+[ocs-rating-engine] 2026/06/14 11:01:27.850597 [INFO] RPC SUCCESS [Method: /pb.DiameterGy/RequestCreditControl] | Latency: 0s | Code: OK
+[ocs-rating-engine] 2026/06/14 11:01:27.850597 [INFO] RPC SUCCESS [Method: /pb.DiameterGy/RequestCreditControl] | Latency: 0s | Code: OK
+[ocs-rating-engine] 2026/06/14 11:02:25.104714 [INFO] Получен системный сигнал ядра Linux [interrupt]. Инициирован Graceful Shutdown...
+[ocs-rating-engine] 2026/06/14 11:02:25.105261 [INFO] Все сетевые сокеты и gRPC соединения успешно закрыты. Сервер остановлен штатно.

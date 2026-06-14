@@ -2,3 +2,16 @@
 [message-bus-kafka-emulator] 2026/06/13 21:51:34.040235 [INFO] gRPC Kafka-Шина данных успешно запущена на :9092
 [message-bus-kafka-emulator] 2026/06/13 21:51:39.481175 [INFO] Получен системный сигнал ядра Linux [interrupt]. Инициирован Graceful Shutdown...
 [message-bus-kafka-emulator] 2026/06/13 21:51:39.485247 [INFO] Все сетевые сокеты и gRPC соединения успешно закрыты. Сервер остановлен штатно.
+[message-bus-kafka-emulator] 2026/06/14 11:00:12.304081 [INFO] Инициализация шины данных оффлайн-логов Message Bus (Apache Kafka Go Emulator)...
+[message-bus-kafka-emulator] 2026/06/14 11:00:12.309265 [INFO] gRPC Kafka-Шина данных успешно запущена на :9092
+[message-bus-kafka-emulator] 2026/06/14 11:00:58.615405 [INFO] RPC SUCCESS [Method: /pb.DiameterGz/StreamCdrLogs] | Latency: 0s | Code: OK
+[message-bus-kafka-emulator] 2026/06/14 11:00:58.615405 [INFO] RPC SUCCESS [Method: /pb.DiameterGz/StreamCdrLogs] | Latency: 0s | Code: OK
+[message-bus-kafka-emulator] 2026/06/14 11:01:00.061720 [INFO] RPC SUCCESS [Method: /pb.DiameterGz/StreamCdrLogs] | Latency: 0s | Code: OK
+[message-bus-kafka-emulator] 2026/06/14 11:01:00.368920 [INFO] RPC SUCCESS [Method: /pb.DiameterGz/StreamCdrLogs] | Latency: 0s | Code: OK
+[message-bus-kafka-emulator] 2026/06/14 11:01:01.631583 [INFO] RPC SUCCESS [Method: /pb.DiameterGz/StreamCdrLogs] | Latency: 0s | Code: OK
+[message-bus-kafka-emulator] 2026/06/14 11:01:02.129025 [INFO] RPC SUCCESS [Method: /pb.DiameterGz/StreamCdrLogs] | Latency: 0s | Code: OK
+[message-bus-kafka-emulator] 2026/06/14 11:01:03.412797 [INFO] RPC SUCCESS [Method: /pb.DiameterGz/StreamCdrLogs] | Latency: 0s | Code: OK
+[message-bus-kafka-emulator] 2026/06/14 11:01:27.851671 [INFO] RPC SUCCESS [Method: /pb.DiameterGz/StreamCdrLogs] | Latency: 0s | Code: OK
+[message-bus-kafka-emulator] 2026/06/14 11:01:27.851671 [INFO] RPC SUCCESS [Method: /pb.DiameterGz/StreamCdrLogs] | Latency: 0s | Code: OK
+[message-bus-kafka-emulator] 2026/06/14 11:02:27.618110 [INFO] Получен системный сигнал ядра Linux [interrupt]. Инициирован Graceful Shutdown...
+[message-bus-kafka-emulator] 2026/06/14 11:02:27.619111 [INFO] Все сетевые сокеты и gRPC соединения успешно закрыты. Сервер остановлен штатно.

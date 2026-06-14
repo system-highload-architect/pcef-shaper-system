@@ -6,4 +6,4 @@ shutdown_timeout: 15
 # Уникальные b2b-переменные, нужные ТОЛЬКО для ядра PCEF:
 pcrf_addr: "localhost:50053"
 ocs_addr: "localhost:50054"
-ofcs_addr: "localhost:50055"
+ofcs_addr: "localhost:9092"

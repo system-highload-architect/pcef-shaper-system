@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"net"
 	"time"
 
@@ -21,8 +22,7 @@ func main() {
 	log := logger.NewAppLogger(cfg.ServiceName, cfg.LogLevel)
 	log.Info("Запуск Исполнительного Ядра Трафика PCEF Core (User Plane Go Engine)...")
 
-	// Инициализируем высокопроизводительный gRPC-клиент к ocs-rating биллингу
-	// На проде K8s CoreDNS прозрачно свяжет это доменное имя с нужным IP ноды
+	// 1. Устанавливаем gRPC-соединение с OCS-биллингом (порт 50054)
 	ocsConn, err := grpc.Dial(cfg.OcsAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatal("Не удалось установить сетевое соединение с OCS-биллингом по адресу %s: %v", cfg.OcsAddr, err)
@@ -30,17 +30,29 @@ func main() {
 	defer ocsConn.Close()
 	ocsClient := gen.NewDiameterGyClient(ocsConn)
 
-	// Dependency Injection слоев архитектуры
-	coreEngine := app.NewPcefCoreService(ocsClient)
+	// 2. Устанавливаем gRPC-соединение с Message Bus Kafka (порт 9092)
+	// На проде K8s CoreDNS свяжет доменное имя автоматически
+	kafkaConn, err := grpc.Dial(cfg.OfcsAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Fatal("Не удалось установить сетевое соединение с Kafka по адресу %s: %v", cfg.OfcsAddr, err)
+	}
+	defer kafkaConn.Close()
+	kafkaClient := gen.NewDiameterGzClient(kafkaConn)
+
+	// Dependency Injection слоев архитектуры (прокидываем оба клиента)
+	coreEngine := app.NewPcefCoreService(ocsClient, kafkaClient)
+
+	// Наполняем кэш стартовыми абонентами для локального старта (на проде это сделает Шлюз по Gx)
+	coreEngine.RegisterSubscriber(context.Background(), "250010000000001", "192.168.1.50", "VIP")
+	coreEngine.RegisterSubscriber(context.Background(), "250010000000002", "192.168.1.51", "BASE")
 
 	grpcHandler := transport.NewGrpcHandler(coreEngine, log)
 
 	server := grpc.NewServer(
 		grpc.UnaryInterceptor(interceptors.UnaryServerInterceptor(log)),
 	)
-	// Внутри main, где регистрируются gRPC интерфейсы, добавь вторую строчку:
 	gen.RegisterTrafficPipelineServer(server, grpcHandler)
-	gen.RegisterDiameterGxServer(server, grpcHandler) // Включаем прием Gx правил!
+	gen.RegisterDiameterGxServer(server, grpcHandler) // Сервер приема Control Plane правил
 
 	listener, err := net.Listen("tcp", cfg.BindAddr)
 	if err != nil {

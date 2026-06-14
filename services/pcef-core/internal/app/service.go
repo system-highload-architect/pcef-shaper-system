@@ -8,9 +8,11 @@ import (
 	"time"
 
 	"pcef-shaper-system/internal/pkg/dispatch"
-	"pcef-shaper-system/internal/pkg/lru" // ИМПОРТИРУЕМ ТВОЙ LRU КЭШ
+	"pcef-shaper-system/internal/pkg/lru"
 	gen "pcef-shaper-system/pb/gen"
 	"pcef-shaper-system/services/pcef-core/internal/domain"
+
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (
@@ -22,9 +24,8 @@ const (
 )
 
 type CoreShard struct {
-	// Мьютекс теперь охраняет только конкурентную аллокацию внутри кэша
 	mu  sync.RWMutex
-	lru *lru.ReactiveLruCache // Твой реактивный кэш вместо обычной мапы!
+	lru *lru.ReactiveLruCache
 }
 
 type PcefCoreService struct {
@@ -33,14 +34,16 @@ type PcefCoreService struct {
 	dispatchEngine *dispatch.TableDrivenEngine
 	dpiSignatures  map[string]uint64
 	ocsClient      gen.DiameterGyClient
+	kafkaClient    gen.DiameterGzClient // ДОБАВЛЕНО: Клиент к шине логов Gz (Kafka)
 }
 
-func NewPcefCoreService(ocsClient gen.DiameterGyClient) *PcefCoreService {
+func NewPcefCoreService(ocsClient gen.DiameterGyClient, kafkaClient gen.DiameterGzClient) *PcefCoreService {
 	s := &PcefCoreService{
 		shardCount:     32,
 		shards:         make([]*CoreShard, 32),
 		dispatchEngine: dispatch.NewTableDrivenEngine(),
 		ocsClient:      ocsClient,
+		kafkaClient:    kafkaClient,
 		dpiSignatures: map[string]uint64{
 			"youtube.com":  TrafficStreaming,
 			"netflix.com":  TrafficStreaming,
@@ -49,24 +52,19 @@ func NewPcefCoreService(ocsClient gen.DiameterGyClient) *PcefCoreService {
 		},
 	}
 
-	// Финтех-колбэк: при ленивом вытеснении сессии из кэша, асинхронно возвращаем остаток кванта по Gy
 	evictCallback := func(ipKey string) {
 		_, _ = s.ocsClient.RequestCreditControl(context.Background(), &gen.CreditControlRequest{
 			SessionId:    fmt.Sprintf("term_%s_%d", ipKey, time.Now().UnixNano()),
-			SubscriberId: "250010000000001", // Для демо мапим на дефолтного юзера
-			RequestType:  3,                 // TERMINATE
+			SubscriberId: "250010000000001",
+			RequestType:  3,
 			UsedBytes:    0,
 		})
 	}
 
-	// Внутри конструктора NewPcefCoreService, в цикле инициализации шардов:
 	for i := uint32(0); i < s.shardCount; i++ {
-		cacheInstance := lru.NewReactiveLruCache(5000, 60*time.Second, evictCallback)
 		s.shards[i] = &CoreShard{
-			lru: cacheInstance,
+			lru: lru.NewReactiveLruCache(5000, 60*time.Second, evictCallback),
 		}
-		// Включаем часовую страховку (для демо-тестов поставим интервал 1 минуту, на проде будет 1 час)
-		cacheInstance.StartHourlyJanitor(context.Background(), 1*time.Minute)
 	}
 
 	s.bootstrapDispatcher()
@@ -91,14 +89,12 @@ func (s *PcefCoreService) RegisterSubscriber(ctx context.Context, imsi, ip, tari
 		LastHeartbeat:    time.Now(),
 	}
 
-	// Пишем через потокобезопасный метод Set твоего кэша
 	s.shards[idx].lru.Set(ip, sess)
 }
 
 func (s *PcefCoreService) ProcessPacket(ctx context.Context, frame *gen.RawPacketFrame) (*gen.EnforcementVerdict, error) {
 	idx := s.getShardIndex(frame.SourceIp)
 
-	// Вытаскиваем сессию из кэша с автоматической "ленивой" проверкой протухания за O(1)
 	val, exists := s.shards[idx].lru.Get(frame.SourceIp)
 	if !exists {
 		return &gen.EnforcementVerdict{SourceIp: frame.SourceIp, Action: "XDP_DROP"}, nil
@@ -140,11 +136,32 @@ func (s *PcefCoreService) ProcessPacket(ctx context.Context, frame *gen.RawPacke
 		return nil, err
 	}
 
+	// АСИНХРОННЫЙ КОНВЕЙЕР: Выплевываем CDR лог в Kafka, полностью освобождая горячий поток вычислений
+	// ASYNC TELEMETRY PIPELINE: Offloading CDR log pushing to an independent concurrent background thread
+	go s.pushCdrLog(session.IMSI, frame.PayloadSizeBytes)
+
 	return &gen.EnforcementVerdict{
 		SourceIp:         frame.SourceIp,
 		Action:           "ALLOW",
 		AllowedBandwidth: session.CurrentBandwidth,
 	}, nil
+}
+
+func (s *PcefCoreService) pushCdrLog(imsi string, bytes int64) {
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+
+	// Формируем пакет пачки и шлем в message-bus (эмулятор Kafka) по интерфейсу Gz
+	_, _ = s.kafkaClient.StreamCdrLogs(ctx, &gen.BulkCdrPack{
+		Records: []*gen.CallDetailRecord{
+			{
+				RecordId:     fmt.Sprintf("cdr_%d", time.Now().UnixNano()),
+				SubscriberId: imsi,
+				BytesDumped:  bytes,
+				Timestamp:    timestamppb.Now(),
+			},
+		},
+	})
 }
 
 func (s *PcefCoreService) bootstrapDispatcher() {
@@ -153,7 +170,7 @@ func (s *PcefCoreService) bootstrapDispatcher() {
 
 	maskStreaming := StateActive | TrafficStreaming | PackHeavy
 	s.dispatchEngine.RegisterAction(maskStreaming, func(ctx context.Context, args ...any) error {
-		sess := args[0].(*domain.SubscriberSession) // Извлекаем по индексу из variadic slice
+		sess := args[0].(*domain.SubscriberSession)
 		sess.CurrentBandwidth = 50 * 1024 * 1024
 		return nil
 	})
