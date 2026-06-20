@@ -44,7 +44,7 @@ func (c *ReactiveLruCache) Get(key string) (any, bool) {
 		return nil, false
 	}
 
-	entry := element.Value.(*cacheEntry)
+	entry, _ := element.Value.(*cacheEntry)
 
 	if time.Since(entry.lastHeartbeat) > c.idleTimeout {
 		c.removeElement(element)
@@ -65,7 +65,7 @@ func (c *ReactiveLruCache) Set(key string, value any) {
 
 	if element, exists := c.items[key]; exists {
 		c.evictList.MoveToFront(element)
-		entry := element.Value.(*cacheEntry)
+		entry, _ := element.Value.(*cacheEntry)
 		entry.value = value
 		entry.lastHeartbeat = time.Now()
 		return
@@ -75,7 +75,7 @@ func (c *ReactiveLruCache) Set(key string, value any) {
 	element := c.evictList.PushFront(entry)
 	c.items[key] = element
 
-	// Каскадное сжатие Давида при переполнении
+	// Каскадное сжатие при переполнении
 	c.evictTailCascade()
 }
 
@@ -93,7 +93,7 @@ func (c *ReactiveLruCache) StartHourlyJanitor(ctx context.Context, checkInterval
 				// Проверяем самый крайний элемент. Если он жив — весь список выше него гарантированно жив
 				tailElement := c.evictList.Back()
 				if tailElement != nil {
-					tailEntry := tailElement.Value.(*cacheEntry)
+					tailEntry, _ := tailElement.Value.(*cacheEntry)
 					if time.Since(tailEntry.lastHeartbeat) > c.idleTimeout {
 						// Запускаем каскадное сжатие
 						evictedCount := c.evictTailCascade()
