@@ -122,7 +122,7 @@ func (c *ReactiveLruCache) evictTailCascade() int {
 			break
 		}
 
-		tailEntry := tailElement.Value.(*cacheEntry)
+		tailEntry, _ := tailElement.Value.(*cacheEntry)
 
 		if time.Since(tailEntry.lastHeartbeat) > c.idleTimeout {
 			c.removeElement(tailElement)
@@ -139,6 +139,6 @@ func (c *ReactiveLruCache) evictTailCascade() int {
 
 func (c *ReactiveLruCache) removeElement(e *list.Element) {
 	c.evictList.Remove(e)
-	kv := e.Value.(*cacheEntry)
+	kv, _ := e.Value.(*cacheEntry)
 	delete(c.items, kv.key)
 }
