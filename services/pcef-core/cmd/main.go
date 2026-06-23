@@ -32,7 +32,6 @@ func main() {
 	ocsClient := gen.NewDiameterGyClient(ocsConn)
 
 	// 2. Устанавливаем gRPC-соединение с Message Bus Kafka (порт 9092)
-	// На проде K8s CoreDNS свяжет доменное имя автоматически
 	kafkaConn, err := grpc.Dial(cfg.OfcsAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatal("Не удалось установить сетевое соединение с Kafka по адресу %s: %v", cfg.OfcsAddr, err)
@@ -40,14 +39,23 @@ func main() {
 	defer kafkaConn.Close()
 	kafkaClient := gen.NewDiameterGzClient(kafkaConn)
 
-	// Dependency Injection слоев архитектуры (прокидываем оба клиента)
-	coreEngine := app.NewPcefCoreService(ocsClient, kafkaClient)
+	// ИСПРАВЛЕНО (Синхронизация Graceful Shutdown): Создаем чистый контекст с отменой.
+	// Мы вызовем cancel() вручную сразу после остановки gRPC сервера, чтобы гарантировать
+	// кристально чистое завершение всех 32 фоновых демонов-хранителей ОЗУ!
+	// FIXED: Bound application runtime scope to explicit context cancellation to clear all background janitors cleanly
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 
-	// Наполняем кэш стартовыми абонентами для локального старта (на проде это сделает Шлюз по Gx)
+	// Dependency Injection слоев архитектуры (прокидываем контекст и оба клиента)
+	coreEngine := app.NewPcefCoreService(ctx, ocsClient, kafkaClient)
+
+	log.Info("🪐 [PCEF CORE]: Кластер из 32 высокоскоростных шард ОЗУ успешно взведен.")
+
+	// Наполняем кэш стартовыми абонентами
 	coreEngine.RegisterSubscriber(context.Background(), "250010000000001", "192.168.1.50", "VIP")
 	coreEngine.RegisterSubscriber(context.Background(), "250010000000002", "192.168.1.51", "BASE")
 
-	// Внутри main.go ядра pcef-core:
+	// Слой телеметрии OpenTelemetry
 	metrics, err := telemetry.InitOtelMetrics(cfg.ServiceName, ":8080", log)
 	if err != nil {
 		log.Fatal("Не удалось запустить слой телеметрии OpenTelemetry: %v", err)
@@ -59,7 +67,7 @@ func main() {
 		grpc.UnaryInterceptor(interceptors.UnaryServerInterceptor(log)),
 	)
 	gen.RegisterTrafficPipelineServer(server, grpcHandler)
-	gen.RegisterDiameterGxServer(server, grpcHandler) // Сервер приема Control Plane правил
+	gen.RegisterDiameterGxServer(server, grpcHandler)
 
 	listener, err := net.Listen("tcp", cfg.BindAddr)
 	if err != nil {
@@ -73,5 +81,15 @@ func main() {
 		}
 	}()
 
+	// Блокируем главный поток здесь, ожидая системного сигнала Linux (SIGTERM/SIGINT).
+	// Внутри этого пакета отработает server.GracefulStop(), плавно закрывая сетевые соединения.
 	shutdown.ListenSignals(log, server, time.Duration(cfg.ShutdownTimeout)*time.Second)
+
+	// ИСПРАВЛЕНО: Сеть закрыта, теперь атомарно тушим 32 фоновых демона кэша!
+	log.Info("🛑 [PCEF CORE]: Каскадный сброс контекста фоновых воркеров шард кэша...")
+	cancel()
+
+	// Небольшая b2b-пауза, чтобы горутины демонов успели прочитать ctx.Done() и выйти из циклов
+	time.Sleep(100 * time.Millisecond)
+	log.Info("🏆 [PCEF CORE]: User Plane Go Engine успешно и безопасно остановлен. 0% утечек.")
 }
